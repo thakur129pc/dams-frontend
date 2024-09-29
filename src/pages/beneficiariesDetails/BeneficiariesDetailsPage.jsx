@@ -1,0 +1,409 @@
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import BeneficiaryDetails from "./components/BeneficiaryDetails";
+import DisbursementDetails from "./components/DisbursementDetails";
+import PreviewDoc from "../../components/PreviewDoc";
+import AddSingleDisbursement from "../addSingleDisbursement/AddSingleDisbursement";
+import QueriesModal from "./components/QueriesModal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { filterByKhatauni } from "../../utils/filterGroupSearch";
+import moment from "moment";
+import {
+  getBeneficiariesDetails,
+  verifyDetails,
+} from "../../redux/apis/beneficiariesAPI";
+import toast from "react-hot-toast";
+import CONSTANTS from "../../constants.json";
+import ApproveRejectModal from "./components/ApproveRejectModal";
+
+const BeneficiariesDetailsPage = () => {
+  const [showFile, setShowFile] = useState(false);
+  const [recallAPI, setRecallAPI] = useState(false);
+  const [file, setFile] = useState();
+  const [modalType, setModalType] = useState("");
+  const [approveRejectModal, setApproveRejectModal] = useState(false);
+  const [beneficiaryId, setBeneficiaryId] = useState(false);
+  const [verifyStatus, setVerifyStatus] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isQueriesOpen, setIsQueriesOpen] = useState(false);
+  const [modalBeneficiary, setModalBeneficiary] = useState("");
+  const [beneficiaryQueries, setBeneficiaryQueries] = useState("");
+
+  const dispatch = useDispatch();
+  const { villageId, khatauni } = useParams();
+  const { userRole, userId } = useSelector(
+    (state) => state.userDetailsSlice.details
+  );
+  const beneficiaryList = useSelector(
+    (state) => state.beneficiariesListSlice.beneficiariesDetails
+  );
+
+  // Function to set userRole
+  const setRole = (role) => {
+    if (role == "1") {
+      return "Verifier";
+    } else if (role == "2") {
+      return "Finance";
+    } else if (role == "3") {
+      return "DC Admistration";
+    } else {
+      return "Inputer";
+    }
+  };
+
+  // Open Disburdement Modal
+  const handleModal = (beneficiary) => {
+    setModalBeneficiary(beneficiary);
+    setIsModalOpen(true);
+  };
+
+  // Handle modal opening
+  const handleVerifyModal = (id, status) => {
+    setApproveRejectModal(true);
+    setBeneficiaryId(id);
+    setVerifyStatus(status);
+    if (status === "1") {
+      setModalType("approve");
+    }
+    if (status === "1" && userRole === "3") {
+      setModalType("dc-approve");
+    }
+    if (status === "0") {
+      setModalType("reject");
+    }
+  };
+
+  // Verify details API
+  const handleVerifyAPI = (beneficiaryId, status, userId, rejectionMessage) => {
+    const payload = {
+      beneficiaryId,
+      status,
+      userId,
+      rejectionMessage,
+    };
+    dispatch(verifyDetails(payload)).then((res) => {
+      if (res.success) {
+        toast.success(res.message);
+        setRecallAPI(!recallAPI);
+      } else {
+        toast.error(res.message);
+      }
+    });
+  };
+
+  useEffect(() => {
+    // Beneficiaries details API
+    dispatch(getBeneficiariesDetails(villageId, khatauni)).then((res) => {
+      if (!res.success) {
+        toast.error(res.message);
+      }
+    });
+  }, [recallAPI]);
+
+  return (
+    <div className="p-4">
+      {/* Heading */}
+      <div className="flex justify-between flex-wrap gap-3 mb-5">
+        <h1 className="text-lg font-semibold text-gray-600">
+          {CONSTANTS.DETAILS_OF} {CONSTANTS.KHATAUNI_SANKHYA} - {khatauni}
+        </h1>
+        {userRole !== "0" && (
+          <div className="text-gray-700 font-semibold">
+            {setRole(userRole)} {CONSTANTS.APPROVER_PROCESS}
+          </div>
+        )}
+      </div>
+      <div className="flex flex-col gap-14">
+        {beneficiaryList?.map((beneficiary, index) => {
+          return (
+            <div
+              key={index}
+              className="shadow-2xl px-3 py-5 rounded-lg border border-gray-100 bg-slate-100 flex flex-col gap-5"
+            >
+              <div className="flex justify-between flex-wrap gap-5 items-center">
+                <h2 className="text-md font-semibold text-gray-700">
+                  {CONSTANTS.BENEFICIARY} {CONSTANTS.SERIAL_NUMBER} -{" "}
+                  {beneficiary.serialNumber}
+                </h2>
+                <div className="flex gap-5 flex-wrap items-center justify-between">
+                  <div>
+                    {beneficiary?.verificationDetails?.level == "0" &&
+                    beneficiary?.verificationDetails?.status != "0" ? (
+                      userRole != "0" && (
+                        <div className="text-amber-500 px-1 py-1 text-xs border-b-amber-500 border-b">
+                          Verifier Approval Pending
+                        </div>
+                      )
+                    ) : (
+                      <div
+                        className={`${
+                          beneficiary?.verificationDetails?.status == "0"
+                            ? "text-red-500 border-b-red-500"
+                            : "text-green-500 border-b-green-500"
+                        } px-1 py-1 text-xs border-b`}
+                      >
+                        {beneficiary?.verificationDetails?.status == "0"
+                          ? "Rejected by"
+                          : "Approved By"}{" "}
+                        {setRole(beneficiary?.verificationDetails?.userRole)} (
+                        {beneficiary?.verificationDetails?.userName}) on{" "}
+                        {moment(
+                          beneficiary?.verificationDetails?.updatedAt
+                        ).format("DD MMM YYYY - hh:mmA")}
+                      </div>
+                    )}
+                  </div>
+                  {userRole === "0" && (
+                    <button
+                      onClick={() => {
+                        handleModal(beneficiary);
+                      }}
+                      className="bg-blue-500 text-white py-1 px-4 rounded-lg hover:bg-blue-600"
+                    >
+                      {beneficiary?.isDisbursementUploaded == "1"
+                        ? CONSTANTS.BUTTON.EDIT_DISBURSEMENT_DETAILS
+                        : CONSTANTS.BUTTON.ADD_DISBURSEMENT_DETAILS}
+                    </button>
+                  )}
+                  {(userRole === "1" ||
+                    userRole === "2" ||
+                    userRole === "3" ||
+                    (userRole === "0" &&
+                      (beneficiary?.hasQuery == "1" ||
+                        beneficiary?.verificationDetails?.status == "0"))) && (
+                    <button
+                      onClick={() => {
+                        setBeneficiaryQueries(beneficiary.queryMessages);
+                        setIsQueriesOpen(true);
+                        setBeneficiaryId(beneficiary.beneficiaryId);
+                      }}
+                      className="bg-orange-500 text-white py-1 px-6 rounded-lg hover:bg-orange-600"
+                    >
+                      {beneficiary?.hasQuery == "1"
+                        ? CONSTANTS.BUTTON.VIEW_QUERIES
+                        : CONSTANTS.BUTTON.RAISE_QUERY}
+                    </button>
+                  )}
+                </div>
+              </div>
+              {/* Beneficiaries Details */}
+              <BeneficiaryDetails details={beneficiary} />
+              {/* Disbursement Details */}
+              <DisbursementDetails
+                isDisbursementUploaded={beneficiary?.isDisbursementUploaded}
+                details={beneficiary?.disbursementDetails}
+              />
+              {/* Bank Details */}
+              {userRole !== "0" && beneficiary?.isDocumentsUploaded == "1" && (
+                <>
+                  <div className="flex flex-wrap gap-5 justify-between font-medium">
+                    <div>
+                      <span className="block text-gray-600">
+                        {CONSTANTS.AADHAR_NUMBER}
+                      </span>
+                      <span className="block text-gray-500 font-semibold">
+                        {beneficiary.bankDetails.aadharNumber}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="block text-gray-600">
+                        {CONSTANTS.PAN}
+                      </span>
+                      <span className="block text-gray-500 font-semibold">
+                        {beneficiary.bankDetails.pancardNumber}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="block text-gray-600">
+                        {CONSTANTS.BANK_ACCOUNT_NUMBER}
+                      </span>
+                      <span className="block text-gray-500 font-semibold">
+                        {beneficiary.bankDetails.accountNumber}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="block text-gray-600">
+                        {CONSTANTS.IFSC}
+                      </span>
+                      <span className="block text-gray-500 font-semibold">
+                        {beneficiary.bankDetails.ifscCode}
+                      </span>
+                    </div>
+                    <div>
+                      <div
+                        className="bg-green-400 text-white rounded-lg py-1 px-3 cursor-pointer"
+                        onClick={() => {
+                          setFile(beneficiary.bankDetails.paymentInvoice);
+                          setShowFile(true);
+                        }}
+                      >
+                        {CONSTANTS.PAYMENT_INVOICE}
+                        <FontAwesomeIcon icon={faEye} className="pl-2" />
+                      </div>
+                    </div>
+                  </div>
+                  {/* Documents */}
+                  <div className="flex flex-wrap gap-5 flex-auto font-medium">
+                    <div
+                      className="border text-gray-500 border-purple-200 bg-violet-200 cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      onClick={() => {
+                        setFile(beneficiary.documents.landIndemnityBond);
+                        setShowFile(true);
+                      }}
+                    >
+                      {CONSTANTS.DOC.LAND_INDEMENITY}
+                      <FontAwesomeIcon icon={faEye} className="pl-2" />
+                    </div>
+                    <div
+                      className="border text-gray-500 border-purple-200 bg-violet-200 cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      onClick={() => {
+                        setFile(beneficiary.documents.strutureIndemnityBond);
+                        setShowFile(true);
+                      }}
+                    >
+                      {CONSTANTS.DOC.STRUCTURE_INDEMENITY}
+                      <FontAwesomeIcon icon={faEye} className="pl-2" />
+                    </div>
+                    <div
+                      className="border text-gray-500 border-purple-200 bg-violet-200 cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      onClick={() => {
+                        setFile(beneficiary.documents.affidavit);
+                        setShowFile(true);
+                      }}
+                    >
+                      {CONSTANTS.DOC.AFFIDAVIT}
+                      <FontAwesomeIcon icon={faEye} className="pl-2" />
+                    </div>
+                    <div
+                      className="border text-gray-500 border-purple-200 bg-violet-200 cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      onClick={() => {
+                        setFile(beneficiary.documents.aadharCard);
+                        setShowFile(true);
+                      }}
+                    >
+                      {CONSTANTS.DOC.AADHAR_CARD}
+                      <FontAwesomeIcon icon={faEye} className="pl-2" />
+                    </div>
+                    <div
+                      className="border text-gray-500 border-purple-200 bg-violet-200 cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      onClick={() => {
+                        setFile(beneficiary.documents.pancard);
+                        setShowFile(true);
+                      }}
+                    >
+                      {CONSTANTS.DOC.PAN_CARD}
+                      <FontAwesomeIcon icon={faEye} className="pl-2" />
+                    </div>
+                    <div
+                      className="border text-gray-500 border-purple-200 bg-violet-200 cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      onClick={() => {
+                        setFile(beneficiary.documents.checkORpassbook);
+                        setShowFile(true);
+                      }}
+                    >
+                      {CONSTANTS.DOC.PASS_BOOK}
+                      <FontAwesomeIcon icon={faEye} className="pl-2" />
+                    </div>
+                    <div
+                      className="border text-gray-500 border-purple-200 bg-violet-200 cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      onClick={() => {
+                        setFile(beneficiary.documents.photo);
+                        setShowFile(true);
+                      }}
+                    >
+                      {CONSTANTS.DOC.PHOTO}
+                      <FontAwesomeIcon icon={faEye} className="pl-2" />
+                    </div>
+                  </div>
+                </>
+              )}
+              {/* Verification Buttons */}
+              {userRole !== "0" && (
+                <div className="flex justify-start md:justify-end flex-wrap gap-5">
+                  <button
+                    disabled={
+                      beneficiary.isDocumentsUploaded == "0" ||
+                      beneficiary.isDisbursememtUploaded == "0" ||
+                      (beneficiary.verificationDetails.level == userRole &&
+                        beneficiary.verificationDetails.status != "0") ||
+                      (beneficiary.verificationDetails.level != userRole &&
+                        beneficiary.verificationDetails.status == "0")
+                    }
+                    className={`text-white py-2 px-4 rounded-lg w-[200px] ${
+                      beneficiary.isDocumentsUploaded == "0" ||
+                      beneficiary.isDisbursememtUploaded == "0" ||
+                      (beneficiary.verificationDetails.level == userRole &&
+                        beneficiary.verificationDetails.status != "0") ||
+                      (beneficiary.verificationDetails.level != userRole &&
+                        beneficiary.verificationDetails.status == "0")
+                        ? "bg-blue-300 cursor-not-allowed"
+                        : "bg-blue-500 hover:bg-blue-600"
+                    }`}
+                    onClick={() =>
+                      handleVerifyModal(beneficiary.beneficiaryId, "1")
+                    }
+                  >
+                    {CONSTANTS.BUTTON.APPROVE}
+                  </button>
+                  <button
+                    disabled={
+                      beneficiary.isDocumentsUploaded == "0" ||
+                      beneficiary.isDisbursememtUploaded == "0" ||
+                      beneficiary.verificationDetails.level == userRole ||
+                      beneficiary.verificationDetails.status == "0"
+                    }
+                    className={`text-white py-2 px-4 rounded-lg w-[200px] ${
+                      beneficiary.isDocumentsUploaded == "0" ||
+                      beneficiary.isDisbursememtUploaded == "0" ||
+                      beneficiary.verificationDetails.level == userRole ||
+                      beneficiary.verificationDetails.status == "0"
+                        ? "bg-red-300 cursor-not-allowed"
+                        : "bg-red-500 hover:bg-red-600"
+                    }`}
+                    onClick={() =>
+                      handleVerifyModal(beneficiary.beneficiaryId, "0")
+                    }
+                  >
+                    {CONSTANTS.BUTTON.REJECT}
+                  </button>
+                </div>
+              )}
+              {showFile && <PreviewDoc file={file} setShowFile={setShowFile} />}
+            </div>
+          );
+        })}
+      </div>
+      {isModalOpen && (
+        <AddSingleDisbursement
+          setIsOpen={setIsModalOpen}
+          details={modalBeneficiary}
+          setRecallAPI={setRecallAPI}
+          recallAPI={recallAPI}
+        />
+      )}
+      {isQueriesOpen && (
+        <QueriesModal
+          closeModal={setIsQueriesOpen}
+          queries={beneficiaryQueries}
+          beneficiaryId={beneficiaryId}
+          setRecallAPI={setRecallAPI}
+          recallAPI={recallAPI}
+        />
+      )}
+      {approveRejectModal && (
+        <ApproveRejectModal
+          userId={userId}
+          type={modalType}
+          verifyStatus={verifyStatus}
+          beneficiaryId={beneficiaryId}
+          handleVerifyAPI={handleVerifyAPI}
+          closeModal={setApproveRejectModal}
+        />
+      )}
+    </div>
+  );
+};
+
+export default BeneficiariesDetailsPage;
