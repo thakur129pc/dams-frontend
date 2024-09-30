@@ -5,10 +5,7 @@ import * as Yup from "yup";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { formatNumberWithCommas } from "../../utils/priceFormat";
 import { uploadDisbursementDetails } from "../../redux/apis/beneficiariesAPI";
-import {
-  filterByKhatauni,
-  groupByKhatauni,
-} from "../../utils/filterGroupSearch";
+import { filterByKhatauni } from "../../utils/filterGroupSearch";
 import toast from "react-hot-toast";
 import CONSTANTS from "../../constants.json";
 
@@ -81,6 +78,7 @@ const AddDisbursementPage = () => {
         beneficiaryId: item.beneficiaryId,
         landPricePerSqMt: item.landPricePerSqMt,
         acquiredBeneficiaryShare: item.acquiredBeneficiaryShare,
+        interestDays: item.interestDays,
         bhumiPrice: item.bhumiPrice || 0,
         faldaarBhumiPrice: item.faldaarBhumiPrice || 0,
         gairFaldaarBhumiPrice: item.gairFaldaarBhumiPrice || 0,
@@ -207,7 +205,9 @@ const AddDisbursementPage = () => {
                 );
 
                 // Calculate interest
-                const interest = (toshan / 100) * 12;
+                const timeInYears =
+                  values?.beneficiaries[index]?.interestDays / 365;
+                const interest = (toshan * 12 * timeInYears) / 100;
                 // Set calculated interest
                 setFieldValue(
                   `beneficiaries[${index}].interest`,
@@ -259,158 +259,155 @@ const AddDisbursementPage = () => {
                     </tr>
                   </thead>
                   <tbody className="text-xs">
-                    {filteredBeneficiariesList?.map(
-                      (beneficiary, index) => {
-                        return (
-                          <tr key={index}>
-                            {/* Serial Number */}
-                            <td className="px-2 py-3">
-                              {beneficiary.serialNumber}
-                            </td>
-                            {/* Beneficiary Name */}
-                            <td className="px-2 py-3 min-w-[150px]">
-                              {beneficiary.beneficiaryName}
-                            </td>
-                            {/* Price Per Sq Mt */}
-                            <td className="px-2 py-3">
-                              <div className="flex gap-1 items-center">
-                                <span className="font-semibold">₹</span>
-                                <Field
-                                  name={`beneficiaries[${index}].landPricePerSqMt`}
-                                  className="border rounded px-2 py-1 w-16"
-                                  readOnly
-                                />
-                              </div>
-                            </td>
-                            {/* Bhumi Price */}
-                            <td className="px-2 py-3">
-                              <div className="border rounded px-2 py-1 w-auto flex gap-1">
-                                <span className="font-semibold">₹</span>
-                                {formatNumberWithCommas(
-                                  values?.beneficiaries[index]?.bhumiPrice
-                                )}
-                              </div>
-                            </td>
-                            {/* Faldaar bhumi */}
-                            <td className="px-2 py-3">
-                              <div className="flex gap-1 items-center relative">
-                                <span className="font-semibold">₹</span>
-                                <Field
-                                  name={`beneficiaries[${index}].faldaarBhumiPrice`}
-                                  type="number"
-                                  className="custom-input border w-24 rounded px-2 py-1 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                  placeholder="*फलदार"
-                                  onKeyDown={(e) => {
-                                    if (
-                                      e.key === "-" ||
-                                      e.key === "e" ||
-                                      e.key === "+"
-                                    ) {
-                                      e.preventDefault();
-                                    }
-                                  }}
-                                />
-                                <ErrorMessage
-                                  name={`beneficiaries[${index}].faldaarBhumiPrice`}
-                                  component="div"
-                                  className="text-red-500 text-xs absolute top-7 left-3"
-                                />
-                              </div>
-                            </td>
-                            {/* Gair faldaar bhumi */}
-                            <td className="px-2 py-3">
-                              <div className="flex gap-1 items-center relative">
-                                <span className="font-semibold">₹</span>
-                                <Field
-                                  name={`beneficiaries[${index}].gairFaldaarBhumiPrice`}
-                                  type="number"
-                                  className="custom-input border rounded px-2 py-1 w-24 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                  placeholder="*गैर फलदार"
-                                  onKeyDown={(e) => {
-                                    if (
-                                      e.key === "-" ||
-                                      e.key === "e" ||
-                                      e.key === "+"
-                                    ) {
-                                      e.preventDefault();
-                                    }
-                                  }}
-                                />
-                                <ErrorMessage
-                                  name={`beneficiaries[${index}].gairFaldaarBhumiPrice`}
-                                  component="div"
-                                  className="text-red-500 text-xs absolute top-7 left-3"
-                                />
-                              </div>
-                            </td>
-                            {/* House */}
-                            <td className="px-2 py-3">
-                              <div className="flex gap-1 items-center relative">
-                                <span className="font-semibold">₹</span>
-                                <Field
-                                  name={`beneficiaries[${index}].housePrice`}
-                                  type="number"
-                                  className="custom-input border rounded px-2 py-1 w-24 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                  placeholder="*मकान"
-                                  onKeyDown={(e) => {
-                                    if (
-                                      e.key === "-" ||
-                                      e.key === "e" ||
-                                      e.key === "+"
-                                    ) {
-                                      e.preventDefault();
-                                    }
-                                  }}
-                                />
-                                <ErrorMessage
-                                  name={`beneficiaries[${index}].housePrice`}
-                                  component="div"
-                                  className="text-red-500 text-xs absolute top-7 left-3"
-                                />
-                              </div>
-                            </td>
-                            {/* Automatically calculated Toshan */}
-                            <td className="px-2 py-3">
-                              <div className="border rounded px-2 py-1 w-auto flex gap-1">
-                                <span className="font-semibold">₹</span>
-                                {formatNumberWithCommas(
-                                  values?.beneficiaries[index]?.toshan
-                                )}
-                              </div>
-                            </td>
-                            {/* Interest */}
-                            <td className="px-2 py-3">
-                              <div className="border rounded px-2 py-1 w-auto flex gap-1">
-                                <span className="font-semibold">₹</span>
-                                {formatNumberWithCommas(
-                                  values?.beneficiaries[index]?.interest
-                                )}
-                              </div>
-                            </td>
-                            {/* Total Compensation */}
-                            <td className="px-2 py-3">
-                              <div className="flex gap-1 font-semibold items-center">
-                                <span>₹</span>
-                                {formatNumberWithCommas(
-                                  values?.beneficiaries[index]
-                                    ?.totalCompensation
-                                )}
-                              </div>
-                            </td>
-                            {/* Vivran */}
-                            <td className="px-2 py-3">
+                    {filteredBeneficiariesList?.map((beneficiary, index) => {
+                      return (
+                        <tr key={index}>
+                          {/* Serial Number */}
+                          <td className="px-2 py-3">
+                            {beneficiary.serialNumber}
+                          </td>
+                          {/* Beneficiary Name */}
+                          <td className="px-2 py-3 min-w-[150px]">
+                            {beneficiary.beneficiaryName}
+                          </td>
+                          {/* Price Per Sq Mt */}
+                          <td className="px-2 py-3">
+                            <div className="flex gap-1 items-center">
+                              <span className="font-semibold">₹</span>
                               <Field
-                                name={`beneficiaries[${index}].vivran`}
-                                as="textarea"
-                                rows="1"
-                                className="custom-input border rounded px-2 py-2 w-28 hide-scrollbar"
-                                placeholder="--"
+                                name={`beneficiaries[${index}].landPricePerSqMt`}
+                                className="border rounded px-2 py-1 w-16"
+                                readOnly
                               />
-                            </td>
-                          </tr>
-                        );
-                      }
-                    )}
+                            </div>
+                          </td>
+                          {/* Bhumi Price */}
+                          <td className="px-2 py-3">
+                            <div className="border rounded px-2 py-1 w-auto flex gap-1">
+                              <span className="font-semibold">₹</span>
+                              {formatNumberWithCommas(
+                                values?.beneficiaries[index]?.bhumiPrice
+                              )}
+                            </div>
+                          </td>
+                          {/* Faldaar bhumi */}
+                          <td className="px-2 py-3">
+                            <div className="flex gap-1 items-center relative">
+                              <span className="font-semibold">₹</span>
+                              <Field
+                                name={`beneficiaries[${index}].faldaarBhumiPrice`}
+                                type="number"
+                                className="custom-input border w-24 rounded px-2 py-1 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                placeholder="*फलदार"
+                                onKeyDown={(e) => {
+                                  if (
+                                    e.key === "-" ||
+                                    e.key === "e" ||
+                                    e.key === "+"
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                              />
+                              <ErrorMessage
+                                name={`beneficiaries[${index}].faldaarBhumiPrice`}
+                                component="div"
+                                className="text-red-500 text-xs absolute top-7 left-3"
+                              />
+                            </div>
+                          </td>
+                          {/* Gair faldaar bhumi */}
+                          <td className="px-2 py-3">
+                            <div className="flex gap-1 items-center relative">
+                              <span className="font-semibold">₹</span>
+                              <Field
+                                name={`beneficiaries[${index}].gairFaldaarBhumiPrice`}
+                                type="number"
+                                className="custom-input border rounded px-2 py-1 w-24 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                placeholder="*गैर फलदार"
+                                onKeyDown={(e) => {
+                                  if (
+                                    e.key === "-" ||
+                                    e.key === "e" ||
+                                    e.key === "+"
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                              />
+                              <ErrorMessage
+                                name={`beneficiaries[${index}].gairFaldaarBhumiPrice`}
+                                component="div"
+                                className="text-red-500 text-xs absolute top-7 left-3"
+                              />
+                            </div>
+                          </td>
+                          {/* House */}
+                          <td className="px-2 py-3">
+                            <div className="flex gap-1 items-center relative">
+                              <span className="font-semibold">₹</span>
+                              <Field
+                                name={`beneficiaries[${index}].housePrice`}
+                                type="number"
+                                className="custom-input border rounded px-2 py-1 w-24 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                placeholder="*मकान"
+                                onKeyDown={(e) => {
+                                  if (
+                                    e.key === "-" ||
+                                    e.key === "e" ||
+                                    e.key === "+"
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                              />
+                              <ErrorMessage
+                                name={`beneficiaries[${index}].housePrice`}
+                                component="div"
+                                className="text-red-500 text-xs absolute top-7 left-3"
+                              />
+                            </div>
+                          </td>
+                          {/* Automatically calculated Toshan */}
+                          <td className="px-2 py-3">
+                            <div className="border rounded px-2 py-1 w-auto flex gap-1">
+                              <span className="font-semibold">₹</span>
+                              {formatNumberWithCommas(
+                                values?.beneficiaries[index]?.toshan
+                              )}
+                            </div>
+                          </td>
+                          {/* Interest */}
+                          <td className="px-2 py-3">
+                            <div className="border rounded px-2 py-1 w-auto flex gap-1">
+                              <span className="font-semibold">₹</span>
+                              {formatNumberWithCommas(
+                                values?.beneficiaries[index]?.interest
+                              )}
+                            </div>
+                          </td>
+                          {/* Total Compensation */}
+                          <td className="px-2 py-3">
+                            <div className="flex gap-1 font-semibold items-center">
+                              <span>₹</span>
+                              {formatNumberWithCommas(
+                                values?.beneficiaries[index]?.totalCompensation
+                              )}
+                            </div>
+                          </td>
+                          {/* Vivran */}
+                          <td className="px-2 py-3">
+                            <Field
+                              name={`beneficiaries[${index}].vivran`}
+                              as="textarea"
+                              rows="1"
+                              className="custom-input border rounded px-2 py-2 w-28 hide-scrollbar"
+                              placeholder="--"
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </Form>

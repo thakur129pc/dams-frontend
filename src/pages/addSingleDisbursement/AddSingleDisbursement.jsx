@@ -46,6 +46,7 @@ const AddSingleDisbursement = ({
     landPricePerSqMt,
     acquiredBeneficiaryShare,
     disbursementDetails,
+    interestDays,
   } = details;
 
   const {
@@ -65,6 +66,7 @@ const AddSingleDisbursement = ({
   const initialValues = {
     beneficiaryId: beneficiaryId,
     landPricePerSqMt: landPricePerSqMt,
+    interestDays: interestDays,
     acquiredBeneficiaryShare: acquiredBeneficiaryShare,
     bhumiPrice: bhumiPrice || 0,
     faldaarBhumiPrice: faldaarBhumiPrice || 0,
@@ -159,7 +161,8 @@ const AddSingleDisbursement = ({
               setFieldValue("toshan", parseFloat(toshan.toFixed(2)));
 
               // Calculate interest
-              const interest = (toshan / 100) * 12;
+              const timeInYears = values?.interestDays / 365;
+              const interest = (toshan * 12 * timeInYears) / 100;
               // Set calculated interest
               setFieldValue("interest", parseFloat(interest.toFixed(2)));
 

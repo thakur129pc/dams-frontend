@@ -3,8 +3,8 @@ export const SeprateString = (string) => {
   const data = string.replace(/\s+/g, " ").split(" ");
   return (
     <div className="flex flex-col">
-      {data.map((el) => {
-        return <div>{el}</div>;
+      {data.map((el, index) => {
+        return <div key={index}>{el}</div>;
       })}
     </div>
   );
