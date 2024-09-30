@@ -144,7 +144,13 @@ const AllBeneficiariesListPage = () => {
       });
       setFilteredBeneficiariesList(filteredData);
     }
-  }, [villageName, khatauniSankhya, verificationStatus, queryStatus]);
+  }, [
+    villageName,
+    khatauniSankhya,
+    verificationStatus,
+    queryStatus,
+    beneficiaryList,
+  ]);
 
   useEffect(() => {
     // Group beneficiaries by Khatauni after filtering

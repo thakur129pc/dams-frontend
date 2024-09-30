@@ -112,7 +112,7 @@ const PaymentStatusPage = () => {
       );
     });
     setFilteredBeneficiariesList(filteredData);
-  }, [villageName, khatauniSankhya, paymentStatus]);
+  }, [villageName, khatauniSankhya, paymentStatus, beneficiaryList]);
 
   useEffect(() => {
     if (searchTerm) {
