@@ -289,10 +289,11 @@ const PaymentStatusPage = () => {
           {/* Clear filter */}
           <div>
             <div
-              className="text-blue-600 hover:underline cursor-pointer"
+              className="text-blue-600 relative group cursor-pointer"
               onClick={() => handleClearFilters()}
             >
               {CONSTANTS.BUTTON.CLEAR_FILTERS}
+              <div className="absolute bottom-0 left-1/2 w-0 h-[2px] bg-blue-500 transition-all duration-300 group-hover:left-0 group-hover:w-full"></div>
             </div>
           </div>
         </div>

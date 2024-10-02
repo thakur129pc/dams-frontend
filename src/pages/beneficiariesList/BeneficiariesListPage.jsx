@@ -7,7 +7,9 @@ import CONSTANTS from "../../constants.json";
 import { RiFileExcel2Line } from "react-icons/ri";
 import Pagination from "../../components/Pagination";
 import { getVillageBeneficiariesList } from "../../redux/apis/beneficiariesAPI";
+import { MdOutlineLibraryAdd } from "react-icons/md";
 import { SeprateString } from "../../utils/SeprateString";
+import BackButton from "../../components/BackButton";
 
 const BeneficiariesListPage = () => {
   const [allCheckbox, setAllCheckbox] = useState(false);
@@ -89,17 +91,20 @@ const BeneficiariesListPage = () => {
 
   return (
     <div className="p-4">
-      <div className="flex justify-between gap-2 flex-wrap pb-6 items-center">
-        <div className="text-lg font-semibold text-gray-600 mb-2 sm:mb-0">
-          {CONSTANTS.VILLAGE}: {villageName} - {CONSTANTS.TOTAL_BENEFICIARIES}:{" "}
-          {totalBeneficiaries}
+      <div className="flex mt-1 justify-between gap-2 flex-wrap pb-6 items-center">
+        <div className="flex gap-3 items-center justify-center">
+          <BackButton />
+          <div className="text-lg font-semibold text-gray-600 mb-2 sm:mb-0">
+            {CONSTANTS.VILLAGE}: {villageName} - {CONSTANTS.TOTAL_BENEFICIARIES}
+            : {totalBeneficiaries}
+          </div>
         </div>
         {userRole === "0" && (
           <button
             onClick={() => {
               navigate(`/upload-beneficiaries/${villageId}`);
             }}
-            className="bg-green-500 hover:bg-green-600 text-white rounded-md px-4 py-2 mb-2 sm:mb-0"
+            className="bg-green-500 hover:bg-green-600 text-white rounded-md px-4 py-1 mb-2 sm:mb-0"
           >
             <div className="flex items-center gap-1">
               <RiFileExcel2Line size={20} />
@@ -115,7 +120,9 @@ const BeneficiariesListPage = () => {
           <thead className="bg-gray-200 text-sm">
             <tr>
               {userRole === "0" && (
-                <th className="px-3 py-2 font-medium text-center">{CONSTANTS.DISBURSEMENT_STATUS}</th>
+                <th className="px-3 py-2 font-medium text-center">
+                  {CONSTANTS.DISBURSEMENT_STATUS}
+                </th>
               )}
               <th className="px-3 py-2">{CONSTANTS.SERIAL_NUMBER}</th>
               <th className="px-3 py-2">{CONSTANTS.BENEFICIARY_NAME}</th>
@@ -177,7 +184,10 @@ const BeneficiariesListPage = () => {
                               : "bg-gray-300 cursor-not-allowed"
                           }`}
                         >
-                          + {CONSTANTS.BUTTON.ADD_DETAILS}
+                          <div className="flex gap-1 items-center justify-center">
+                            <MdOutlineLibraryAdd size={16} />
+                            {CONSTANTS.BUTTON.ADD_DETAILS}
+                          </div>
                         </button>
                       )}
                     </div>
@@ -212,19 +222,25 @@ const BeneficiariesListPage = () => {
                             {CONSTANTS.KHATAUNI_SANKHYA}: {khatauniSankhya}
                           </label>
                         </div>
-                        <div>
+                        <div className="py-1 flex gap-4 justify-center items-center">
                           <Link
                             to={`/beneficiaries-details/${villageId}/${khatauniSankhya}`}
-                            className="hover:underline px-3 py-2 text-blue-600"
+                            className="text-blue-600 group"
                           >
-                            {CONSTANTS.BUTTON.VIEW_DETAILS}
+                            <div className="relative">
+                              {CONSTANTS.BUTTON.VIEW_DETAILS}
+                              <div className="absolute bottom-0 left-1/2 w-0 h-[2px] bg-blue-500 transition-all duration-300 group-hover:left-0 group-hover:w-full"></div>
+                            </div>
                           </Link>
                           {userRole === "0" && (
                             <Link
                               to={`/add-disbursement/${villageName}/${khatauniSankhya}`}
-                              className="hover:underline px-3 py-2 text-blue-600"
+                              className="text-blue-600 group"
                             >
-                              {CONSTANTS.BUTTON.EDIT_DETAILS}
+                              <div className="relative">
+                                {CONSTANTS.BUTTON.EDIT_DETAILS}
+                                <div className="absolute bottom-0 left-1/2 w-0 h-[2px] bg-blue-500 transition-all duration-300 group-hover:left-0 group-hover:w-full"></div>
+                              </div>
                             </Link>
                           )}
                         </div>

@@ -39,6 +39,23 @@ export default {
         ".hide-scrollbar::-webkit-scrollbar": {
           display: "none",
         },
+        ".custom-scrollbar::-webkit-scrollbar": {
+          width: "8px",
+          height: "8px",
+        },
+        ".custom-scrollbar::-webkit-scrollbar-thumb": {
+          backgroundColor: "rgba(100, 100, 255, 0.6)",
+          borderRadius: "10px",
+          border: "2px solid transparent",
+          backgroundClip: "padding-box",
+        },
+        ".custom-scrollbar::-webkit-scrollbar-thumb:hover": {
+          backgroundColor: "rgba(100, 100, 255, 0.8)",
+        },
+        ".custom-scrollbar::-webkit-scrollbar-track": {
+          backgroundColor: "rgba(200, 200, 255, 0.2)",
+          borderRadius: "10px",
+        },
       });
     },
   ],

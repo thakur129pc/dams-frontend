@@ -7,6 +7,7 @@ import { formatNumberWithCommas } from "../../utils/priceFormat";
 import { uploadDisbursementDetails } from "../../redux/apis/beneficiariesAPI";
 import { filterByKhatauni } from "../../utils/filterGroupSearch";
 import toast from "react-hot-toast";
+import BackButton from "../../components/BackButton";
 import CONSTANTS from "../../constants.json";
 
 const AddDisbursementPage = () => {
@@ -102,14 +103,17 @@ const AddDisbursementPage = () => {
   return (
     <div className="p-4">
       {/* Action Buttons */}
-      <div className="text-xl font-semibold text-gray-700 mb-3 gap-1 flex flex-wrap">
-        {CONSTANTS.PAGES_NAME.ADD_DISBURSEMENT_DETAILS}
-        <span>-</span>
-        <div className="font-medium text-gray-500 mb-2 sm:mb-0">
-          {villageName}
+      <div className="flex gap-3 mt-1 justify-start items-center">
+        <BackButton />
+        <div className="text-lg font-semibold text-gray-700 gap-1 flex flex-wrap">
+          {CONSTANTS.PAGES_NAME.DISBURSEMENT_DETAILS}
+          <span>-</span>
+          <div className="font-medium text-gray-500 mb-2 sm:mb-0">
+            {villageName}
+          </div>
         </div>
       </div>
-      <div className="text-lg flex justify-between flex-wrap-reverse py-5 items-center">
+      <div className="text-md flex justify-between flex-wrap-reverse py-4 items-center">
         {/* Verification Checkbox */}
         <div className="mb-2">
           <div className="flex items-center mt-4">
@@ -128,12 +132,12 @@ const AddDisbursementPage = () => {
             />
             <label
               htmlFor="isConsent"
-              className="ml-2 block text-sm text-gray-900"
+              className="ml-2 block text-md text-gray-900"
             ></label>
             {CONSTANTS.BUTTON.DISBURSEMENT_CHECK}
           </div>
           {checkError && (
-            <div className="text-red-500 text-sm">
+            <div className="text-red-500 text-xs">
               {CONSTANTS.ERROR.CONSENT}
             </div>
           )}
@@ -155,7 +159,7 @@ const AddDisbursementPage = () => {
         </div>
       </div>
 
-      <div className="overflow-x-scroll border rounded-lg shadow-lg">
+      <div className="overflow-x-scroll custom-scrollbar border rounded-lg shadow-lg">
         {/* Formik Form */}
         <Formik
           initialValues={initialValues}
@@ -233,9 +237,11 @@ const AddDisbursementPage = () => {
             return (
               <Form id="beneficiaryForm">
                 <table className="text-left">
-                  <thead className="bg-gray-200 text-xs">
+                  <thead className="bg-gray-200 text-sm">
                     <tr>
-                      <th className="px-2 py-3">{CONSTANTS.SERIAL_NUMBER}</th>
+                      <th className="px-2 py-3 text-center">
+                        {CONSTANTS.SERIAL_NUMBER}
+                      </th>
                       <th className="px-2 py-3">
                         {CONSTANTS.BENEFICIARY_NAME}
                       </th>
@@ -263,7 +269,7 @@ const AddDisbursementPage = () => {
                       return (
                         <tr key={index}>
                           {/* Serial Number */}
-                          <td className="px-2 py-3">
+                          <td className="px-2 py-3 text-center">
                             {beneficiary.serialNumber}
                           </td>
                           {/* Beneficiary Name */}

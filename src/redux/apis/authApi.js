@@ -9,7 +9,6 @@ import { startLoading, stopLoading } from "../slices/loadingSlice";
 
 // Login API
 export const userLogin = (params) => async (dispatch) => {
-  dispatch(startLoading());
   dispatch(removeUserDetails());
   try {
     const payload = {
@@ -34,10 +33,22 @@ export const userLogin = (params) => async (dispatch) => {
         })
       );
     }
-    dispatch(stopLoading());
     return data;
   } catch (error) {
-    dispatch(stopLoading());
+    return handleApiError(error);
+  }
+};
+
+// Change Password API
+export const changePassword = (params) => async (dispatch) => {
+  try {
+    const payload = {
+      currentPassword: params.currentPassword,
+      newPassword: params.newPassword,
+    };
+    const response = await apiClient.post("/change-password", payload);
+    return response.data;
+  } catch (error) {
     return handleApiError(error);
   }
 };

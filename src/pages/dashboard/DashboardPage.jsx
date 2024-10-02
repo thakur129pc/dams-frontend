@@ -42,7 +42,7 @@ const DashboardPage = () => {
           ))}
         </div>
       ) : (
-        <div className="flex justify-center items-start font-semibold">{CONSTANTS.NO_DATA}</div>
+        <div className="flex justify-center h-[350px] items-center font-semibold text-gray-500">{CONSTANTS.NO_DATA}</div>
       )}
     </div>
   );

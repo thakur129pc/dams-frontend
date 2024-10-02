@@ -8,7 +8,6 @@ import AddSingleDisbursement from "../addSingleDisbursement/AddSingleDisbursemen
 import QueriesModal from "./components/QueriesModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
-import { filterByKhatauni } from "../../utils/filterGroupSearch";
 import moment from "moment";
 import {
   getBeneficiariesDetails,
@@ -17,6 +16,7 @@ import {
 import toast from "react-hot-toast";
 import CONSTANTS from "../../constants.json";
 import ApproveRejectModal from "./components/ApproveRejectModal";
+import BackButton from "../../components/BackButton";
 
 const BeneficiariesDetailsPage = () => {
   const [showFile, setShowFile] = useState(false);
@@ -112,15 +112,18 @@ const BeneficiariesDetailsPage = () => {
   return (
     <div className="p-4">
       {/* Heading */}
-      <div className="flex justify-between flex-wrap gap-3 mb-5">
-        <h1 className="text-lg font-semibold text-gray-600">
-          {CONSTANTS.DETAILS_OF} {CONSTANTS.KHATAUNI_SANKHYA} - {khatauni}
-        </h1>
-        {userRole !== "0" && (
-          <div className="text-gray-700 font-semibold">
-            {setRole(userRole)} {CONSTANTS.APPROVER_PROCESS}
-          </div>
-        )}
+      <div className="flex gap-3 justify-start items-center mt-1 mb-5">
+        <BackButton />
+        <div className="flex justify-between flex-wrap gap-3">
+          <h1 className="text-lg font-semibold text-gray-600">
+            {CONSTANTS.DETAILS_OF} {CONSTANTS.KHATAUNI_SANKHYA} - {khatauni}
+          </h1>
+          {userRole !== "0" && (
+            <div className="text-gray-700 font-semibold">
+              {setRole(userRole)} {CONSTANTS.APPROVER_PROCESS}
+            </div>
+          )}
+        </div>
       </div>
       <div className="flex flex-col gap-14">
         {beneficiaryList?.map((beneficiary, index) => {

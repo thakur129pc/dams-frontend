@@ -50,6 +50,7 @@
     "IMPORT_EXCEL": "Import via Excel",
     "BENEFICIARIES_LIST": "Beneficiaries List",
     "ADD_DISBURSEMENT_DETAILS": "Add Disbursement Details",
+    "DISBURSEMENT_DETAILS": "Disbursement Details",
     "APAYMENT_DISBURSEMENT_STATUS": "Payment Disbursement Status"
   },
   "BUTTON": {
@@ -63,6 +64,7 @@
     "SELECT_FILE": "Select File to Import",
     "IMPORT_NOW": "IMPORT NOW",
     "LOGOUT": "Logout",
+    "CHANGE_PASSWORD": "Change Password",
     "LOGIN": "Login",
     "UPLOAD_BENEFICIARIES_DATA": "Upload Beneficiary Data",
     "SELECT_ALL": "Select All",
@@ -81,7 +83,7 @@
     "CLEAR_FILTERS": "Clear all filters"
   },
   "ERROR": {
-    "EXCEL": "Must be .xlsx files using our Excel template below",
+    "EXCEL": "Must be .xlsx file similar to our ",
     "CONSENT": "You must verify all calculations to proceed"
   },
   "LABEL": {
