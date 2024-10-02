@@ -23,6 +23,7 @@ const BeneficiariesDetailsPage = () => {
   const [recallAPI, setRecallAPI] = useState(false);
   const [file, setFile] = useState();
   const [modalType, setModalType] = useState("");
+  const [canQuery, setCanQuery] = useState(false);
   const [approveRejectModal, setApproveRejectModal] = useState(false);
   const [beneficiaryId, setBeneficiaryId] = useState(false);
   const [verifyStatus, setVerifyStatus] = useState(false);
@@ -32,10 +33,8 @@ const BeneficiariesDetailsPage = () => {
   const [beneficiaryQueries, setBeneficiaryQueries] = useState("");
 
   const dispatch = useDispatch();
-  const { villageId, khatauni } = useParams();
-  const { userRole, userId } = useSelector(
-    (state) => state.userDetailsSlice.details
-  );
+  const { villageId, khatauni, id } = useParams();
+  const { userRole } = useSelector((state) => state.userDetailsSlice.details);
   const beneficiaryList = useSelector(
     (state) => state.beneficiariesListSlice.beneficiariesDetails
   );
@@ -73,15 +72,23 @@ const BeneficiariesDetailsPage = () => {
     if (status === "0") {
       setModalType("reject");
     }
+    if (status === "2") {
+      setModalType("revok");
+    }
   };
 
   // Verify details API
-  const handleVerifyAPI = (beneficiaryId, status, userId, rejectionMessage) => {
+  const handleVerifyAPI = (
+    beneficiaryId,
+    status,
+    rejectionMessage,
+    revokedMessage
+  ) => {
     const payload = {
       beneficiaryId,
       status,
-      userId,
       rejectionMessage,
+      revokedMessage,
     };
     dispatch(verifyDetails(payload)).then((res) => {
       if (res.success) {
@@ -95,7 +102,7 @@ const BeneficiariesDetailsPage = () => {
 
   useEffect(() => {
     // Beneficiaries details API
-    dispatch(getBeneficiariesDetails(villageId, khatauni)).then((res) => {
+    dispatch(getBeneficiariesDetails(villageId, khatauni, id)).then((res) => {
       if (!res.success) {
         toast.error(res.message);
       }
@@ -129,29 +136,50 @@ const BeneficiariesDetailsPage = () => {
                 </h2>
                 <div className="flex gap-5 flex-wrap items-center justify-between">
                   <div>
-                    {beneficiary?.verificationDetails?.level == "0" &&
+                    {beneficiary?.verificationDetails?.level != userRole &&
                     beneficiary?.verificationDetails?.status != "0" ? (
                       userRole != "0" && (
-                        <div className="text-amber-500 px-1 py-1 text-xs border-b-amber-500 border-b">
-                          Verifier Approval Pending
+                        <div className="text-amber-400 font-medium px-1 py-1 text-xs border-amber-500 border-x-2 rounded-md">
+                          {setRole(userRole)} Approval Pending
                         </div>
                       )
                     ) : (
-                      <div
-                        className={`${
-                          beneficiary?.verificationDetails?.status == "0"
-                            ? "text-red-500 border-b-red-500"
-                            : "text-green-500 border-b-green-500"
-                        } px-1 py-1 text-xs border-b`}
-                      >
-                        {beneficiary?.verificationDetails?.status == "0"
-                          ? "Rejected by"
-                          : "Approved By"}{" "}
-                        {setRole(beneficiary?.verificationDetails?.userRole)} (
-                        {beneficiary?.verificationDetails?.userName}) on{" "}
-                        {moment(
-                          beneficiary?.verificationDetails?.updatedAt
-                        ).format("DD MMM YYYY - hh:mmA")}
+                      <div>
+                        {beneficiary?.verificationDetails?.status &&
+                          (beneficiary?.verificationDetails?.status != "1" ||
+                            (beneficiary?.verificationDetails?.status == "1" &&
+                              beneficiary?.verificationDetails?.level !=
+                                "0")) &&
+                          (beneficiary?.verificationDetails?.status == "0" ? (
+                            <div className="text-red-400 border-red-500 px-2 py-1 text-xs font-medium border-x-2 rounded-md">
+                              Rejected by{" "}
+                              {setRole(
+                                beneficiary?.verificationDetails?.userRole
+                              )}{" "}
+                              ({beneficiary?.verificationDetails?.userName}) on{" "}
+                              {moment(
+                                beneficiary?.verificationDetails?.updatedAt
+                              ).format("DD MMM YYYY - hh:mmA")}
+                            </div>
+                          ) : (
+                            <div className="text-green-400 border-green-500 px-1 py-1 font-medium  text-xs border-x-2 rounded-md">
+                              Approved By{" "}
+                              {setRole(
+                                beneficiary?.verificationDetails?.history[0]
+                                  ?.userRole
+                              )}{" "}
+                              (
+                              {
+                                beneficiary?.verificationDetails?.history[0]
+                                  ?.updatedBy
+                              }
+                              ) on{" "}
+                              {moment(
+                                beneficiary?.verificationDetails?.history[0]
+                                  ?.updatedAt
+                              ).format("DD MMM YYYY - hh:mmA")}
+                            </div>
+                          ))}
                       </div>
                     )}
                   </div>
@@ -178,11 +206,21 @@ const BeneficiariesDetailsPage = () => {
                         setBeneficiaryQueries(beneficiary.queryMessages);
                         setIsQueriesOpen(true);
                         setBeneficiaryId(beneficiary.beneficiaryId);
+                        setCanQuery(
+                          beneficiary?.hasQuery == "1" ||
+                            (beneficiary.verificationDetails.level !=
+                              userRole &&
+                              beneficiary.verificationDetails.status != "0")
+                        );
                       }}
                       className="bg-orange-500 text-white py-1 px-6 rounded-lg hover:bg-orange-600"
                     >
                       {beneficiary?.hasQuery == "1"
                         ? CONSTANTS.BUTTON.VIEW_QUERIES
+                        : beneficiary?.hasQuery != "1" &&
+                          (beneficiary.verificationDetails.level == userRole ||
+                            beneficiary.verificationDetails.status == "0")
+                        ? CONSTANTS.BUTTON.QUERY
                         : CONSTANTS.BUTTON.RAISE_QUERY}
                     </button>
                   )}
@@ -233,7 +271,7 @@ const BeneficiariesDetailsPage = () => {
                     </div>
                     <div>
                       <div
-                        className="bg-green-400 text-white rounded-lg py-1 px-3 cursor-pointer"
+                        className="border border-sky-200 bg-sky-100 transition duration-300 hover:shadow-2xl text-gray-500 rounded-lg py-1 px-3 cursor-pointer"
                         onClick={() => {
                           setFile(beneficiary.bankDetails.paymentInvoice);
                           setShowFile(true);
@@ -247,7 +285,7 @@ const BeneficiariesDetailsPage = () => {
                   {/* Documents */}
                   <div className="flex flex-wrap gap-5 flex-auto font-medium">
                     <div
-                      className="border text-gray-500 border-purple-200 bg-violet-200 cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      className="border text-gray-500 bg-fuchsia-100 border-fuchsia-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                       onClick={() => {
                         setFile(beneficiary.documents.landIndemnityBond);
                         setShowFile(true);
@@ -257,7 +295,7 @@ const BeneficiariesDetailsPage = () => {
                       <FontAwesomeIcon icon={faEye} className="pl-2" />
                     </div>
                     <div
-                      className="border text-gray-500 border-purple-200 bg-violet-200 cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      className="border text-gray-500 bg-fuchsia-100 border-fuchsia-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                       onClick={() => {
                         setFile(beneficiary.documents.strutureIndemnityBond);
                         setShowFile(true);
@@ -267,7 +305,7 @@ const BeneficiariesDetailsPage = () => {
                       <FontAwesomeIcon icon={faEye} className="pl-2" />
                     </div>
                     <div
-                      className="border text-gray-500 border-purple-200 bg-violet-200 cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      className="border text-gray-500 bg-fuchsia-100 border-fuchsia-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                       onClick={() => {
                         setFile(beneficiary.documents.affidavit);
                         setShowFile(true);
@@ -277,7 +315,7 @@ const BeneficiariesDetailsPage = () => {
                       <FontAwesomeIcon icon={faEye} className="pl-2" />
                     </div>
                     <div
-                      className="border text-gray-500 border-purple-200 bg-violet-200 cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      className="border text-gray-500 bg-fuchsia-100 border-fuchsia-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                       onClick={() => {
                         setFile(beneficiary.documents.aadharCard);
                         setShowFile(true);
@@ -287,7 +325,7 @@ const BeneficiariesDetailsPage = () => {
                       <FontAwesomeIcon icon={faEye} className="pl-2" />
                     </div>
                     <div
-                      className="border text-gray-500 border-purple-200 bg-violet-200 cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      className="border text-gray-500 bg-fuchsia-100 border-fuchsia-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                       onClick={() => {
                         setFile(beneficiary.documents.pancard);
                         setShowFile(true);
@@ -297,7 +335,7 @@ const BeneficiariesDetailsPage = () => {
                       <FontAwesomeIcon icon={faEye} className="pl-2" />
                     </div>
                     <div
-                      className="border text-gray-500 border-purple-200 bg-violet-200 cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      className="border text-gray-500 bg-fuchsia-100 border-fuchsia-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                       onClick={() => {
                         setFile(beneficiary.documents.checkORpassbook);
                         setShowFile(true);
@@ -307,7 +345,7 @@ const BeneficiariesDetailsPage = () => {
                       <FontAwesomeIcon icon={faEye} className="pl-2" />
                     </div>
                     <div
-                      className="border text-gray-500 border-purple-200 bg-violet-200 cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      className="border text-gray-500 bg-fuchsia-100 border-fuchsia-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                       onClick={() => {
                         setFile(beneficiary.documents.photo);
                         setShowFile(true);
@@ -320,56 +358,68 @@ const BeneficiariesDetailsPage = () => {
                 </>
               )}
               {/* Verification Buttons */}
-              {userRole !== "0" && (
-                <div className="flex justify-start md:justify-end flex-wrap gap-5">
-                  <button
-                    disabled={
-                      beneficiary.isDocumentsUploaded == "0" ||
-                      beneficiary.isDisbursememtUploaded == "0" ||
-                      (beneficiary.verificationDetails.level == userRole &&
-                        beneficiary.verificationDetails.status != "0") ||
-                      (beneficiary.verificationDetails.level != userRole &&
-                        beneficiary.verificationDetails.status == "0")
-                    }
-                    className={`text-white py-2 px-4 rounded-lg w-[200px] ${
-                      beneficiary.isDocumentsUploaded == "0" ||
-                      beneficiary.isDisbursememtUploaded == "0" ||
-                      (beneficiary.verificationDetails.level == userRole &&
-                        beneficiary.verificationDetails.status != "0") ||
-                      (beneficiary.verificationDetails.level != userRole &&
-                        beneficiary.verificationDetails.status == "0")
-                        ? "bg-blue-300 cursor-not-allowed"
-                        : "bg-blue-500 hover:bg-blue-600"
-                    }`}
-                    onClick={() =>
-                      handleVerifyModal(beneficiary.beneficiaryId, "1")
-                    }
-                  >
-                    {CONSTANTS.BUTTON.APPROVE}
-                  </button>
-                  <button
-                    disabled={
-                      beneficiary.isDocumentsUploaded == "0" ||
-                      beneficiary.isDisbursememtUploaded == "0" ||
-                      beneficiary.verificationDetails.level == userRole ||
-                      beneficiary.verificationDetails.status == "0"
-                    }
-                    className={`text-white py-2 px-4 rounded-lg w-[200px] ${
-                      beneficiary.isDocumentsUploaded == "0" ||
-                      beneficiary.isDisbursememtUploaded == "0" ||
-                      beneficiary.verificationDetails.level == userRole ||
-                      beneficiary.verificationDetails.status == "0"
-                        ? "bg-red-300 cursor-not-allowed"
-                        : "bg-red-500 hover:bg-red-600"
-                    }`}
-                    onClick={() =>
-                      handleVerifyModal(beneficiary.beneficiaryId, "0")
-                    }
-                  >
-                    {CONSTANTS.BUTTON.REJECT}
-                  </button>
-                </div>
-              )}
+              {userRole !== "0" &&
+                !(beneficiary.verificationDetails.level == userRole) && (
+                  <div className="flex justify-start md:justify-end flex-wrap gap-5">
+                    {beneficiary.verificationDetails.level != userRole &&
+                    beneficiary.verificationDetails.status == "0" ? (
+                      <button
+                        disabled={
+                          beneficiary.isDocumentsUploaded == "0" ||
+                          beneficiary.isDisbursememtUploaded == "0"
+                        }
+                        className={`text-white py-2 px-4 rounded-lg w-[200px] ${
+                          beneficiary.isDocumentsUploaded == "0" ||
+                          beneficiary.isDisbursememtUploaded == "0"
+                            ? "bg-blue-300 cursor-not-allowed"
+                            : "bg-violet-400 hover:bg-violet-500"
+                        }`}
+                        onClick={() =>
+                          handleVerifyModal(beneficiary.beneficiaryId, "2")
+                        }
+                      >
+                        {CONSTANTS.BUTTON.REVOK}
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          disabled={
+                            beneficiary.isDocumentsUploaded == "0" ||
+                            beneficiary.isDisbursememtUploaded == "0"
+                          }
+                          className={`text-white py-2 px-4 rounded-lg w-[200px] ${
+                            beneficiary.isDocumentsUploaded == "0" ||
+                            beneficiary.isDisbursememtUploaded == "0"
+                              ? "bg-blue-300 cursor-not-allowed"
+                              : "bg-blue-500 hover:bg-blue-600"
+                          }`}
+                          onClick={() =>
+                            handleVerifyModal(beneficiary.beneficiaryId, "1")
+                          }
+                        >
+                          {CONSTANTS.BUTTON.APPROVE}
+                        </button>
+                        <button
+                          disabled={
+                            beneficiary.isDocumentsUploaded == "0" ||
+                            beneficiary.isDisbursememtUploaded == "0"
+                          }
+                          className={`text-white py-2 px-4 rounded-lg w-[200px] ${
+                            beneficiary.isDocumentsUploaded == "0" ||
+                            beneficiary.isDisbursememtUploaded == "0"
+                              ? "bg-red-300 cursor-not-allowed"
+                              : "bg-red-500 hover:bg-red-600"
+                          }`}
+                          onClick={() =>
+                            handleVerifyModal(beneficiary.beneficiaryId, "0")
+                          }
+                        >
+                          {CONSTANTS.BUTTON.REJECT}
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
               {showFile && <PreviewDoc file={file} setShowFile={setShowFile} />}
             </div>
           );
@@ -390,11 +440,11 @@ const BeneficiariesDetailsPage = () => {
           beneficiaryId={beneficiaryId}
           setRecallAPI={setRecallAPI}
           recallAPI={recallAPI}
+          canQuery={canQuery}
         />
       )}
       {approveRejectModal && (
         <ApproveRejectModal
-          userId={userId}
           type={modalType}
           verifyStatus={verifyStatus}
           beneficiaryId={beneficiaryId}

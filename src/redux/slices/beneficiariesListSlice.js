@@ -27,9 +27,13 @@ const beneficiariesListSlice = createSlice({
       state.villageBeneficiaries = [];
     },
     updateBeneficiariesDetails: (state, action) => {
-      const data = action.payload.sort(
+      const beneficiaryId = action.payload.id;
+      let data = action.payload.data.sort(
         (a, b) => a.serialNumber - b.serialNumber
       );
+      if (beneficiaryId) {
+        data = data.filter((item) => item.beneficiaryId === beneficiaryId);
+      }
       state.beneficiariesDetails = [...data];
     },
     removeBeneficiariesDetails: (state) => {

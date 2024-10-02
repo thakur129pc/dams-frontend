@@ -55,7 +55,7 @@ const RouterComponent = () => {
                 ),
             },
             {
-              path: "beneficiaries-details/:villageId/:khatauni",
+              path: "beneficiaries-details/:villageId/:khatauni/:id?",
               element: <BeneficiariesDetailsPage />,
             },
             {

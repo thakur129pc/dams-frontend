@@ -14,6 +14,7 @@ const QueriesModal = ({
   setRecallAPI,
   recallAPI,
   beneficiaryId,
+  canQuery,
 }) => {
   const [message, setMessage] = useState("");
   const [file, setFile] = useState(null);
@@ -65,7 +66,9 @@ const QueriesModal = ({
           to={attachment}
           target="_blank"
           rel="noopener noreferrer"
-          className="cursor-pointer"
+          className={`cursor-pointer flex ${
+            bool ? "justify-end" : "justify-start"
+          }`}
         >
           <img
             src={attachment}
@@ -131,13 +134,67 @@ const QueriesModal = ({
           ref={scrollRef}
         >
           {queries?.map((msg, index) =>
-            msg.message === "---@over@---" ? (
-              <div
-                key={index}
-                className={`my-5 text-xs font-semibold text-gray-500 flex justify-center items-center`}
-              >
-                <div className="border border-gray-300 flex-1"></div><div className="p-2">Previous
-                Queries</div><div className="border border-gray-300 flex-1"></div>
+            msg.message === "---@approved@---" ? (
+              <div key={index} className="flex flex-col mb-4">
+                <div className="my-2 text-xs font-semibold text-gray-500 flex justify-center items-center">
+                  <div className="border border-blue-400 flex-1"></div>
+                  <div className="p-2 text-blue-400">Approved</div>
+                  <div className="border border-blue-400 flex-1"></div>
+                </div>
+                <div className="w-2/3 self-center p-4 bg-blue-300 rounded-lg shadow text-left">
+                  <p className="text-gray-700">
+                    Approved by {msg.userId === userId ? "You" : msg.userName} -
+                    [{setRole(msg.userRole)}] on{" "}
+                    {moment(msg.updatedAt).format("DD MMM YYYY - hh:mmA")}
+                  </p>
+                </div>
+                <div className="my-5 text-xs font-semibold text-gray-500 flex justify-center items-center">
+                  <div className="border border-blue-400 flex-1"></div>
+                </div>
+              </div>
+            ) : msg.message.includes("---@rejected@---") ? (
+              <div key={index} className="flex flex-col mb-4">
+                <div className="my-2 text-xs font-semibold text-gray-500 flex justify-center items-center">
+                  <div className="border border-red-400 flex-1"></div>
+                  <div className="p-2 text-red-400">Rejected</div>
+                  <div className="border border-red-400 flex-1"></div>
+                </div>
+                <div className="w-2/3 self-center p-4 bg-red-300 rounded-lg shadow text-left">
+                  <p className="text-gray-700">
+                    <span className="font-medium text-gray-600">Reason: </span>
+                    {msg.message.split("---@rejected@---")[1]}
+                  </p>
+                  <small className="block mt-2 text-gray-500">
+                    By {msg.userId === userId ? "You" : msg.userName} -{" "}
+                    {setRole(msg.userRole)} on{" "}
+                    {moment(msg.updatedAt).format("DD MMM YYYY - hh:mmA")}
+                  </small>
+                </div>
+                <div className="my-5 text-xs font-semibold text-gray-500 flex justify-center items-center">
+                  <div className="border border-red-400 flex-1"></div>
+                </div>
+              </div>
+            ) : msg.message.includes("---@revoked@---") ? (
+              <div key={index} className="flex flex-col mb-4">
+                <div className="my-2 text-xs font-semibold text-gray-500 flex justify-center items-center">
+                  <div className="border border-orange-400 flex-1"></div>
+                  <div className="p-2 text-orange-400">Revoked</div>
+                  <div className="border border-orange-400 flex-1"></div>
+                </div>
+                <div className="w-2/3 self-center p-4 bg-orange-300 rounded-lg shadow text-left">
+                  <p className="text-gray-700">
+                    <span className="font-medium text-gray-600">Reason: </span>
+                    {msg.message.split("---@revoked@---")[1]}
+                  </p>
+                  <small className="block mt-2 text-gray-500">
+                    By {msg.userId === userId ? "You" : msg.userName} -{" "}
+                    {setRole(msg.userRole)} on{" "}
+                    {moment(msg.updatedAt).format("DD MMM YYYY - hh:mmA")}
+                  </small>
+                </div>
+                <div className="my-5 text-xs font-semibold text-gray-500 flex justify-center items-center">
+                  <div className="border border-orange-400 flex-1"></div>
+                </div>
               </div>
             ) : (
               <div
@@ -172,71 +229,73 @@ const QueriesModal = ({
         </div>
 
         {/* Input Section */}
-        <div>
-          {file && (
-            <>
-              <hr />
-              <div className="relative flex items-center w-[225px] justify-between border border-gray-300 rounded-lg mt-3 p-2 shadow-md backdrop-blur-lg text-gray-700 bg-white/80">
-                {/* Document Icon */}
-                <span className="text-green-600">
-                  <IoDocument size={24} />
-                </span>
+        {canQuery && (
+          <div>
+            {file && (
+              <>
+                <hr />
+                <div className="relative flex items-center w-[225px] justify-between border border-gray-300 rounded-lg mt-3 p-2 shadow-md backdrop-blur-lg text-gray-700 bg-white/80">
+                  {/* Document Icon */}
+                  <span className="text-green-600">
+                    <IoDocument size={24} />
+                  </span>
 
-                {/* File name */}
-                <span className="block flex-1 overflow-hidden text-ellipsis whitespace-nowrap ml-3 text-sm font-medium">
-                  {file.name}
-                </span>
+                  {/* File name */}
+                  <span className="block flex-1 overflow-hidden text-ellipsis whitespace-nowrap ml-3 text-sm font-medium">
+                    {file.name}
+                  </span>
 
-                {/* Close button */}
-                <RxCrossCircled
-                  onClick={() => setFile("")}
-                  className="text-red-500 hover:text-white hover:bg-red-500 absolute font-extrabold right-[-6px] top-[-6px] bg-white rounded-full cursor-pointer"
-                  size={20}
+                  {/* Close button */}
+                  <RxCrossCircled
+                    onClick={() => setFile("")}
+                    className="text-red-500 hover:text-white hover:bg-red-500 absolute font-extrabold right-[-6px] top-[-6px] bg-white rounded-full cursor-pointer"
+                    size={20}
+                  />
+                </div>
+              </>
+            )}
+            <div className="mt-3 flex gap-2 w-full items-center  border-2 border-gray-500 p-1 rounded-xl px-2">
+              <label
+                htmlFor="attachDoc"
+                className="cursor-pointer text-gray-600 p-2"
+              >
+                <IoAttach size={24} />
+                <input
+                  type="file"
+                  className="mb-2 hidden"
+                  onChange={(e) => handleFileChange(e)}
+                  id="attachDoc"
+                />
+              </label>
+              <div className="w-full">
+                <input
+                  type="text"
+                  className="w-full rounded-lg px-1 py-2 outline-none"
+                  placeholder="Write your query here..."
+                  value={message}
+                  onChange={(e) => {
+                    setMessage(e.target.value.replace(/\s+/g, " "));
+                  }}
                 />
               </div>
-            </>
-          )}
-          <div className="mt-3 flex gap-2 w-full items-center  border-2 border-gray-500 p-1 rounded-xl px-2">
-            <label
-              htmlFor="attachDoc"
-              className="cursor-pointer text-gray-600 p-2"
-            >
-              <IoAttach size={24} />
-              <input
-                type="file"
-                className="mb-2 hidden"
-                onChange={(e) => handleFileChange(e)}
-                id="attachDoc"
-              />
-            </label>
-            <div className="w-full">
-              <input
-                type="text"
-                className="w-full rounded-lg px-1 py-2 outline-none"
-                placeholder="Write your query here..."
-                value={message}
-                onChange={(e) => {
-                  setMessage(e.target.value.replace(/\s+/g, " "));
-                }}
-              />
-            </div>
-            <div className="flex items-center">
-              <button
-                onClick={() => {
-                  handleQueryAPI();
-                }}
-                disabled={!message && !file}
-                className={`ml-2 px-6 py-1 ${
-                  message || file
-                    ? "bg-blue-500 hover:bg-blue-600"
-                    : "bg-blue-300 cursor-not-allowed"
-                } text-white rounded-lg`}
-              >
-                SEND
-              </button>
+              <div className="flex items-center">
+                <button
+                  onClick={() => {
+                    handleQueryAPI();
+                  }}
+                  disabled={!message && !file}
+                  className={`ml-2 px-6 py-1 ${
+                    message || file
+                      ? "bg-blue-500 hover:bg-blue-600"
+                      : "bg-blue-300 cursor-not-allowed"
+                  } text-white rounded-lg`}
+                >
+                  SEND
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

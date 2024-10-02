@@ -50,7 +50,7 @@ export const getVillageBeneficiariesList = (villageId) => async (dispatch) => {
 
 // API to fetch beneficiaries details list with respect to village and selected khatauni
 export const getBeneficiariesDetails =
-  (villageId, khatauniSankhya) => async (dispatch) => {
+  (villageId, khatauniSankhya, id) => async (dispatch) => {
     dispatch(startLoading());
     dispatch(removeBeneficiariesDetails());
     try {
@@ -58,7 +58,9 @@ export const getBeneficiariesDetails =
         params: { villageId, khatauniSankhya },
       });
       if (response.status === 200) {
-        dispatch(updateBeneficiariesDetails(response.data.beneficiaries));
+        dispatch(
+          updateBeneficiariesDetails({ data: response.data.beneficiaries, id })
+        );
       }
       dispatch(stopLoading());
       return response.data;

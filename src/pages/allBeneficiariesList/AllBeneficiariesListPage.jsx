@@ -86,14 +86,7 @@ const AllBeneficiariesListPage = () => {
       return (
         <div className="text-yellow-500">
           (Query) [
-          {(beneficiary?.verificationLevel !== userRole &&
-            beneficiary?.verificationStatus !== "0") ||
-          (beneficiary?.verificationLevel === userRole &&
-            beneficiary?.verificationStatus === "0" &&
-            beneficiary?.verificationStatus !== "")
-            ? "Raised"
-            : "Arrived"}
-          ]
+          {beneficiary?.verificationLevel !== userRole ? "Raised" : "Arrived"}]
         </div>
       );
     }
@@ -106,7 +99,7 @@ const AllBeneficiariesListPage = () => {
     ) {
       return <div className="text-green-500">(Verified)</div>;
     }
-    return <div className="text-blue-500">(No Action)</div>;
+    return <div className="text-blue-500">(Pending)</div>;
   };
 
   useEffect(() => {
@@ -127,19 +120,8 @@ const AllBeneficiariesListPage = () => {
                 item.verificationLevel !== userRole)) &&
           (!queryStatus ||
             (queryStatus === "raised"
-              ? item.hasQuery === "1" &&
-                ((item.verificationLevel !== userRole &&
-                  item.verificationStatus !== "0") ||
-                  (item.verificationLevel === userRole &&
-                    item.verificationStatus === "0" &&
-                    item.verificationStatus !== ""))
-              : item.hasQuery === "1" &&
-                ((item.verificationLevel === userRole &&
-                  (item.verificationStatus === "1" ||
-                    item.verificationStatus === "")) ||
-                  (item.verificationLevel !== userRole &&
-                    item.verificationStatus === "0" &&
-                    item.verificationStatus !== ""))))
+              ? item.hasQuery === "1" && item.verificationLevel !== userRole
+              : item.hasQuery === "1" && item.verificationLevel === userRole))
         );
       });
       setFilteredBeneficiariesList(filteredData);
@@ -327,9 +309,11 @@ const AllBeneficiariesListPage = () => {
                 Rejected by {setRole(userRole)}
               </option>
             )}
-            <option key="2" value="2">
-              Rejected by {setRole((parseFloat(userRole) + 1).toString())}
-            </option>
+            {userRole !== "3" && (
+              <option key="2" value="2">
+                Rejected by {setRole((parseFloat(userRole) + 1).toString())}
+              </option>
+            )}
           </select>
         </div>
         {/* Query Filter */}
@@ -345,12 +329,16 @@ const AllBeneficiariesListPage = () => {
             <option value="" disabled>
               Queries
             </option>
-            <option key="1" value="arrived">
-              Arrived
-            </option>
-            <option key="2" value="raised">
-              Raised
-            </option>
+            {userRole !== "3" && (
+              <option key="" value="arrived">
+                Arrived
+              </option>
+            )}
+            {userRole !== "0" && (
+              <option key="2" value="raised">
+                Raised
+              </option>
+            )}
           </select>
         </div>
         {/* Clear filter */}
@@ -369,7 +357,9 @@ const AllBeneficiariesListPage = () => {
         <table className="min-w-full text-left table-auto">
           <thead className="bg-gray-200 text-sm">
             <tr>
-              <th className="px-3 py-2">{CONSTANTS.STATUS}</th>
+              <th className="px-3 py-2 text-center">
+                {CONSTANTS.VERIFICATION_STATUS}
+              </th>
               <th className="px-3 py-2">{CONSTANTS.SERIAL_NUMBER}</th>
               <th className="px-3 py-2">{CONSTANTS.BENEFICIARY_NAME}</th>
               <th className="px-3 py-2">{CONSTANTS.KHASRA_NUMBER}</th>
@@ -425,10 +415,10 @@ const AllBeneficiariesListPage = () => {
                       <td className="px-3 py-2">{item.landPricePerSqMt}</td>
                       <td className="px-3 py-2">
                         <Link
-                          to={`/beneficiaries-details/${item.villageId}/${khatauniSankhya}`}
+                          to={`/beneficiaries-details/${item.villageId}/${khatauniSankhya}/${item.beneficiaryId}`}
                           className="hover:underline text-blue-600"
                         >
-                          {CONSTANTS.BUTTON.VIEW_MORE}
+                          {CONSTANTS.BUTTON.VIEW}
                         </Link>
                       </td>
                     </tr>

@@ -1,5 +1,9 @@
 import React, { useState } from "react";
-import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
+import {
+  FaCheckCircle,
+  FaExclamationCircle,
+  FaArrowCircleUp,
+} from "react-icons/fa";
 import { RiMoneyRupeeCircleFill } from "react-icons/ri";
 
 export default function ApproveRejectModal({
@@ -7,10 +11,10 @@ export default function ApproveRejectModal({
   closeModal,
   handleVerifyAPI,
   beneficiaryId,
-  userId,
   verifyStatus,
 }) {
   const [rejectionMessage, setRejectionMessage] = useState("");
+  const [revokedMessage, setRevokedMessage] = useState("");
   const [messageError, setMessageError] = useState(false);
 
   const getModalContent = () => {
@@ -26,6 +30,14 @@ export default function ApproveRejectModal({
           message: "Are you sure you want to reject the case?",
           icon: <FaExclamationCircle className="text-red-500 text-5xl" />,
           isRemarkRequired: true,
+          isRevok: false,
+        };
+      case "revok":
+        return {
+          message: "Are you sure you want to revok the case?",
+          icon: <FaArrowCircleUp className="text-blue-500 text-5xl" />,
+          isRemarkRequired: true,
+          isRevok: true,
         };
       case "dc-approve":
         return {
@@ -39,7 +51,7 @@ export default function ApproveRejectModal({
     }
   };
 
-  const modalContent = getModalContent(beneficiaryId, userId);
+  const modalContent = getModalContent();
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -53,13 +65,17 @@ export default function ApproveRejectModal({
             <textarea
               placeholder="Write remark*"
               className="border border-gray-300 rounded w-full p-2 outline-blue-600"
-              value={rejectionMessage}
+              value={modalContent.isRevok ? revokedMessage : rejectionMessage}
               onChange={(e) => {
-                setRejectionMessage(e.target.value.replace(/\s+/g, " "));
+                if (modalContent.isRevok) {
+                  setRevokedMessage(e.target.value.replace(/\s+/g, " "));
+                } else {
+                  setRejectionMessage(e.target.value.replace(/\s+/g, " "));
+                }
               }}
             />
             {messageError && (
-              <div className="text-xs text-red-500">Message is required</div>
+              <div className="text-xs text-red-500">Remark is required</div>
             )}
           </div>
         )}
@@ -77,11 +93,15 @@ export default function ApproveRejectModal({
                 setMessageError(true);
                 return;
               }
+              if (verifyStatus === "2" && !revokedMessage) {
+                setMessageError(true);
+                return;
+              }
               handleVerifyAPI(
                 beneficiaryId,
                 verifyStatus,
-                userId,
-                rejectionMessage
+                rejectionMessage,
+                revokedMessage
               );
               closeModal();
             }}
