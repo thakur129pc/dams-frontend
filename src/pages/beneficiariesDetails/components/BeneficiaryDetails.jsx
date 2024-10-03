@@ -4,6 +4,7 @@ import { CustomizeString } from "../../../utils/SeprateString";
 
 const BeneficiaryDetails = ({ details }) => {
   const {
+    beneficiaryType,
     beneficiaryName,
     khasraNumber,
     acquiredKhasraNumber,
@@ -13,8 +14,35 @@ const BeneficiaryDetails = ({ details }) => {
     landPricePerSqMt,
     acquiredBeneficiaryShare,
   } = details;
+
+  // Set beneficiary type
+  const setBeneficiaryType = (type) => {
+    if (type === "self") {
+      return "Self";
+    }
+    if (type === "poa") {
+      return "POA";
+    }
+    if (type === "nok") {
+      return "NOK";
+    }
+    if (type === "poah") {
+      return "POA-H";
+    }
+    if (type === "nokh") {
+      return "NOK-H";
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg p-6 border border-gray-200">
+      <div className="text-gray-700 pb-4 flex gap-3">
+        <div className="font-bold">{CONSTANTS.BENEFICIARY_TYPE}</div>
+        <div>-</div>
+        <div className="text-gray-500 font-medium">
+          {setBeneficiaryType(beneficiaryType)}
+        </div>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-gray-700">
         <div>
           <div className="font-bold">{CONSTANTS.BENEFICIARY_NAME}</div>

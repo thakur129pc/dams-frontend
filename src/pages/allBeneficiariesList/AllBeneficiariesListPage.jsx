@@ -80,6 +80,25 @@ const AllBeneficiariesListPage = () => {
     }
   };
 
+  // Set beneficiary type
+  const setBeneficiaryType = (type) => {
+    if (type === "self") {
+      return "Self";
+    }
+    if (type === "poa") {
+      return "POA";
+    }
+    if (type === "nok") {
+      return "NOK";
+    }
+    if (type === "poah") {
+      return "POA-H";
+    }
+    if (type === "nokh") {
+      return "NOK-H";
+    }
+  };
+
   // Set Beneficiary Status
   const setBeneficiaryStatus = (beneficiary) => {
     if (beneficiary?.hasQuery == "1") {
@@ -108,20 +127,20 @@ const AllBeneficiariesListPage = () => {
       const filteredData = beneficiaryList?.filter((item) => {
         return (
           (!villageName || item.villageName === villageName) &&
-          (!khatauniSankhya || item.khatauniSankhya === khatauniSankhya) &&
+          (!khatauniSankhya || item.khatauniSankhya == khatauniSankhya) &&
           (!verificationStatus ||
-            (verificationStatus === "1"
-              ? item.verificationStatus === "1" &&
-                item.verificationLevel === userRole
-              : verificationStatus === "2"
-              ? item.verificationStatus === "0" &&
-                item.verificationLevel === userRole
-              : item.verificationStatus === "0" &&
+            (verificationStatus == "1"
+              ? item.verificationStatus == "1" &&
+                item.verificationLevel == userRole
+              : verificationStatus == "2"
+              ? item.verificationStatus == "0" &&
+                item.verificationLevel == userRole
+              : item.verificationStatus == "0" &&
                 item.verificationLevel !== userRole)) &&
           (!queryStatus ||
-            (queryStatus === "raised"
-              ? item.hasQuery === "1" && item.verificationLevel !== userRole
-              : item.hasQuery === "1" && item.verificationLevel === userRole))
+            (queryStatus == "raised"
+              ? item.hasQuery == "1" && item.verificationLevel !== userRole
+              : item.hasQuery == "1" && item.verificationLevel == userRole))
         );
       });
       setFilteredBeneficiariesList(filteredData);
@@ -279,8 +298,8 @@ const AllBeneficiariesListPage = () => {
             <option value="" disabled>
               Khatauni
             </option>
-            {[...new Set(khatauniOptions)]?.map((khatauni) => (
-              <option key={khatauni} value={khatauni}>
+            {[...new Set(khatauniOptions)]?.map((khatauni, index) => (
+              <option key={index} value={khatauni}>
                 {khatauni}
               </option>
             ))}
@@ -353,26 +372,41 @@ const AllBeneficiariesListPage = () => {
         </div>
       </div>
 
-      <div className="overflow-auto border rounded-lg shadow-lg">
+      <div className="overflow-x-scroll custom-scrollbar border rounded-lg shadow-lg">
         {/* Table Header */}
         <table className="min-w-full text-left table-auto">
           <thead className="bg-gray-200 text-sm">
             <tr>
+              <th className="px-3 py-2 text-center">{CONSTANTS.TYPE}</th>
               <th className="px-3 py-2 text-center">
                 {CONSTANTS.VERIFICATION_STATUS}
               </th>
               <th className="px-3 py-2">{CONSTANTS.SERIAL_NUMBER}</th>
-              <th className="px-3 py-2">{CONSTANTS.BENEFICIARY_NAME}</th>
-              <th className="px-3 py-2">{CONSTANTS.KHASRA_NUMBER}</th>
-              <th className="px-3 py-2">{CONSTANTS.AREA_VARIETY}</th>
-              <th className="px-3 py-2">{CONSTANTS.ACQUIRED_KHASRA_NUMBER}</th>
-              <th className="px-3 py-2">{CONSTANTS.ACQUIRED_RAKBA}</th>
-              <th className="px-3 py-2">{CONSTANTS.BENEFICIARY_SHARE}</th>
-              <th className="px-3 py-2">
+              <th className="px-3 py-2 min-w-[150px]">
+                {CONSTANTS.BENEFICIARY_NAME}
+              </th>
+              <th className="px-3 py-2 min-w-[100px]">
+                {CONSTANTS.KHASRA_NUMBER}
+              </th>
+              <th className="px-3 py-2 min-w-[100px]">
+                {CONSTANTS.AREA_VARIETY}
+              </th>
+              <th className="px-3 py-2 min-w-[100px]">
+                {CONSTANTS.ACQUIRED_KHASRA_NUMBER}
+              </th>
+              <th className="px-3 py-2 min-w-[100px]">
+                {CONSTANTS.ACQUIRED_RAKBA}
+              </th>
+              <th className="px-3 py-2 min-w-[100px]">
+                {CONSTANTS.BENEFICIARY_SHARE}
+              </th>
+              <th className="px-3 py-2 min-w-[100px]">
                 {CONSTANTS.ACQUIRED_BENEFICIARY_SHARE}
               </th>
-              <th className="px-3 py-2">{CONSTANTS.LAND_PRICE_PER_SQ_MT}</th>
-              <th className="px-3 py-2"></th>
+              <th className="px-3 py-2 min-w-[100px]">
+                {CONSTANTS.LAND_PRICE_PER_SQ_MT}
+              </th>
+              <th className="px-3 py-2 min-w-[100px]"></th>
             </tr>
           </thead>
           {filteredBeneficiariesList?.length > 0 ? (
@@ -382,7 +416,7 @@ const AllBeneficiariesListPage = () => {
                 <React.Fragment key={khatauniSankhya}>
                   {/* Section Header */}
                   <tr className="bg-gray-100">
-                    <td colSpan="11" className="px-4 py-2 font-semibold">
+                    <td colSpan="12" className="px-4 py-2 font-semibold">
                       <div className="flex gap-2">
                         {CONSTANTS.KHATAUNI_SANKHYA}: {khatauniSankhya}
                       </div>
@@ -392,6 +426,9 @@ const AllBeneficiariesListPage = () => {
                   {/* Rows for each Serial Number under Khatauni Sankhya */}
                   {groupedBeneficiaries[khatauniSankhya]?.map((item) => (
                     <tr key={item.beneficiaryId}>
+                      <td className="px-3 py-2 font-medium text-gray-600 text-center">
+                        {setBeneficiaryType(item.beneficiaryType)}
+                      </td>
                       <td className="px-3 py-2 text-center">
                         {setBeneficiaryStatus(item)}
                       </td>
@@ -413,14 +450,16 @@ const AllBeneficiariesListPage = () => {
                       <td className="px-3 py-2">
                         {item.acquiredBeneficiaryShare}
                       </td>
-                      <td className="px-3 py-2">{item.landPricePerSqMt}</td>
+                      <td className="px-3 py-2 text-center">
+                        {item.landPricePerSqMt}
+                      </td>
                       <td className="px-3 py-2">
                         <Link
                           to={`/beneficiaries-details/${item.villageId}/${khatauniSankhya}/${item.beneficiaryId}`}
-                          className="text-blue-500 relative group"
+                          className="text-blue-600 relative group"
                         >
-                          {CONSTANTS.BUTTON.VIEW}
-                          <div className="absolute bottom-0 left-1/2 w-0 h-[2px] bg-blue-500 transition-all duration-300 group-hover:left-0 group-hover:w-full"></div>
+                          {CONSTANTS.BUTTON.VIEW_DETAILS}
+                          <div className="absolute bottom-0 left-1/2 w-0 h-[2px] bg-blue-600 transition-all duration-300 group-hover:left-0 group-hover:w-full"></div>
                         </Link>
                       </td>
                     </tr>
@@ -432,7 +471,7 @@ const AllBeneficiariesListPage = () => {
             <tbody className="text-sm">
               <tr className="py-5">
                 <td
-                  colSpan="11"
+                  colSpan="12"
                   className="px-4 py-5 font-semibold text-center"
                 >
                   {CONSTANTS.NO_DATA}

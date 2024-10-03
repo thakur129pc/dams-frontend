@@ -288,7 +288,7 @@ const BeneficiariesDetailsPage = () => {
                   {/* Documents */}
                   <div className="flex flex-wrap gap-5 flex-auto font-medium">
                     <div
-                      className="border text-gray-500 bg-fuchsia-100 border-fuchsia-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      className="border text-gray-500 bg-sky-100 border-sky-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                       onClick={() => {
                         setFile(beneficiary.documents.landIndemnityBond);
                         setShowFile(true);
@@ -298,7 +298,7 @@ const BeneficiariesDetailsPage = () => {
                       <FontAwesomeIcon icon={faEye} className="pl-2" />
                     </div>
                     <div
-                      className="border text-gray-500 bg-fuchsia-100 border-fuchsia-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      className="border text-gray-500 bg-sky-100 border-sky-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                       onClick={() => {
                         setFile(beneficiary.documents.strutureIndemnityBond);
                         setShowFile(true);
@@ -308,7 +308,7 @@ const BeneficiariesDetailsPage = () => {
                       <FontAwesomeIcon icon={faEye} className="pl-2" />
                     </div>
                     <div
-                      className="border text-gray-500 bg-fuchsia-100 border-fuchsia-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      className="border text-gray-500 bg-sky-100 border-sky-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                       onClick={() => {
                         setFile(beneficiary.documents.affidavit);
                         setShowFile(true);
@@ -318,7 +318,7 @@ const BeneficiariesDetailsPage = () => {
                       <FontAwesomeIcon icon={faEye} className="pl-2" />
                     </div>
                     <div
-                      className="border text-gray-500 bg-fuchsia-100 border-fuchsia-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      className="border text-gray-500 bg-sky-100 border-sky-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                       onClick={() => {
                         setFile(beneficiary.documents.aadharCard);
                         setShowFile(true);
@@ -328,7 +328,7 @@ const BeneficiariesDetailsPage = () => {
                       <FontAwesomeIcon icon={faEye} className="pl-2" />
                     </div>
                     <div
-                      className="border text-gray-500 bg-fuchsia-100 border-fuchsia-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      className="border text-gray-500 bg-sky-100 border-sky-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                       onClick={() => {
                         setFile(beneficiary.documents.pancard);
                         setShowFile(true);
@@ -338,7 +338,7 @@ const BeneficiariesDetailsPage = () => {
                       <FontAwesomeIcon icon={faEye} className="pl-2" />
                     </div>
                     <div
-                      className="border text-gray-500 bg-fuchsia-100 border-fuchsia-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      className="border text-gray-500 bg-sky-100 border-sky-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                       onClick={() => {
                         setFile(beneficiary.documents.checkORpassbook);
                         setShowFile(true);
@@ -348,7 +348,7 @@ const BeneficiariesDetailsPage = () => {
                       <FontAwesomeIcon icon={faEye} className="pl-2" />
                     </div>
                     <div
-                      className="border text-gray-500 bg-fuchsia-100 border-fuchsia-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
+                      className="border text-gray-500 bg-sky-100 border-sky-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                       onClick={() => {
                         setFile(beneficiary.documents.photo);
                         setShowFile(true);

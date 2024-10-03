@@ -107,8 +107,8 @@ const PaymentStatusPage = () => {
     const filteredData = beneficiaryList?.filter((item) => {
       return (
         (!villageName || item.villageName === villageName) &&
-        (!khatauniSankhya || item.khatauniSankhya === khatauniSankhya) &&
-        (!paymentStatus || item.paymentStatus === paymentStatus)
+        (!khatauniSankhya || item.khatauniSankhya == khatauniSankhya) &&
+        (!paymentStatus || item.paymentStatus == paymentStatus)
       );
     });
     setFilteredBeneficiariesList(filteredData);
