@@ -66,7 +66,7 @@ const AddSingleDisbursement = ({
   const initialValues = {
     beneficiaryId: beneficiaryId,
     landPricePerSqMt: landPricePerSqMt,
-    interestDays: interestDays,
+    interestDays: interestDays || 0,
     acquiredBeneficiaryShare: acquiredBeneficiaryShare,
     bhumiPrice: bhumiPrice || 0,
     faldaarBhumiPrice: faldaarBhumiPrice || 0,
@@ -75,7 +75,7 @@ const AddSingleDisbursement = ({
     toshan: toshan || 0,
     interest: interest || 0,
     totalCompensation: totalCompensation || 0,
-    isConsent: "",
+    isConsent: false,
     vivran: vivran || "",
   };
 

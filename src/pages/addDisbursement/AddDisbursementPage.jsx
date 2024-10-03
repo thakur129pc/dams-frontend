@@ -79,7 +79,7 @@ const AddDisbursementPage = () => {
         beneficiaryId: item.beneficiaryId,
         landPricePerSqMt: item.landPricePerSqMt,
         acquiredBeneficiaryShare: item.acquiredBeneficiaryShare,
-        interestDays: item.interestDays,
+        interestDays: item.interestDays || 0,
         bhumiPrice: item.bhumiPrice || 0,
         faldaarBhumiPrice: item.faldaarBhumiPrice || 0,
         gairFaldaarBhumiPrice: item.gairFaldaarBhumiPrice || 0,
@@ -88,7 +88,7 @@ const AddDisbursementPage = () => {
         interest: item.interest || 0,
         totalCompensation: item.totalCompensation || 0,
         vivran: item.vivran || "",
-        isConsent: "0",
+        isConsent: "1",
       })),
     });
   }, [filteredBeneficiariesList]);

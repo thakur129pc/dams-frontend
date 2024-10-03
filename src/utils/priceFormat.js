@@ -1,5 +1,5 @@
 export function formatNumberWithCommas(num) {
-  if (!num) return;
+  if (!num) return 0;
   const numStr = parseFloat(num).toFixed(2);
   const [integerPart, decimalPart] = numStr.split(".");
   const lastThree = integerPart.slice(-3);
