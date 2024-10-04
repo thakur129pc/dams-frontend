@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import CONSTANTS from "../../../constants.json";
 import { CustomizeString } from "../../../utils/SeprateString";
+import { useSelector } from "react-redux";
+import LegalHeirModal from "./LegalHeirModal";
 
-const BeneficiaryDetails = ({ details }) => {
+const BeneficiaryDetails = ({ details, setRecallAPI, recallAPI }) => {
   const {
+    beneficiaryId,
     beneficiaryType,
     beneficiaryName,
     khasraNumber,
@@ -15,33 +18,49 @@ const BeneficiaryDetails = ({ details }) => {
     acquiredBeneficiaryShare,
   } = details;
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { userRole } = useSelector((state) => state.userDetailsSlice.details);
+
   // Set beneficiary type
   const setBeneficiaryType = (type) => {
     if (type === "self") {
-      return "Self";
+      return <div className="text-green-500">Self</div>;
     }
     if (type === "poa") {
-      return "POA";
+      return <div className="text-red-500">POA</div>;
     }
     if (type === "nok") {
-      return "NOK";
+      return <div className="text-red-500">NOK</div>;
     }
     if (type === "poah") {
-      return "POA-H";
+      return <div className="text-blue-500">POA-H</div>;
     }
     if (type === "nokh") {
-      return "NOK-H";
+      return <div className="text-blue-500">NOK-H</div>;
     }
   };
 
   return (
     <div className="bg-white rounded-lg p-6 border border-gray-200">
-      <div className="text-gray-700 pb-4 flex gap-3">
-        <div className="font-bold">{CONSTANTS.BENEFICIARY_TYPE}</div>
-        <div>-</div>
-        <div className="text-gray-500 font-medium">
-          {setBeneficiaryType(beneficiaryType)}
+      <div className="flex justify-between items-center flex-wrap pb-4">
+        <div className="text-gray-700 flex gap-3 items-center justify-center">
+          <div className="font-bold">{CONSTANTS.BENEFICIARY_TYPE}</div>
+          <div>-</div>
+          <div className="text-gray-500 font-medium">
+            {setBeneficiaryType(beneficiaryType)}
+          </div>
         </div>
+        {userRole === "0" && (
+          <button
+            onClick={() => {
+              setIsModalOpen(true);
+            }}
+            className="bg-amber-400 text-white py-1 px-4 rounded-lg hover:bg-amber-500"
+          >
+            Add Legal Heir
+          </button>
+        )}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-gray-700">
         <div>
@@ -88,6 +107,14 @@ const BeneficiaryDetails = ({ details }) => {
           <div className="text-gray-600">{landPricePerSqMt}</div>
         </div>
       </div>
+      {isModalOpen && (
+        <LegalHeirModal
+          closeModal={() => setIsModalOpen(false)}
+          beneficiaryId={beneficiaryId}
+          setRecallAPI={setRecallAPI}
+          recallAPI={recallAPI}
+        />
+      )}
     </div>
   );
 };

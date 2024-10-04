@@ -147,7 +147,7 @@ const AddDisbursementPage = () => {
             onClick={() => navigate(-1)}
             className="bg-gray-500 hover:bg-gray-600 text-white rounded-lg px-4 py-1 mb-2 sm:mb-0"
           >
-            {CONSTANTS.BUTTON.CANCLE}
+            {CONSTANTS.BUTTON.CANCEL}
           </button>
           <button
             form="beneficiaryForm"
@@ -318,7 +318,7 @@ const AddDisbursementPage = () => {
                               <ErrorMessage
                                 name={`beneficiaries[${index}].faldaarBhumiPrice`}
                                 component="div"
-                                className="text-red-500 text-xs absolute top-7 left-3"
+                                className="text-red-500 text-xs absolute top-8 left-3"
                               />
                             </div>
                           </td>
@@ -344,7 +344,7 @@ const AddDisbursementPage = () => {
                               <ErrorMessage
                                 name={`beneficiaries[${index}].gairFaldaarBhumiPrice`}
                                 component="div"
-                                className="text-red-500 text-xs absolute top-7 left-3"
+                                className="text-red-500 text-xs absolute top-8 left-3"
                               />
                             </div>
                           </td>
@@ -370,7 +370,7 @@ const AddDisbursementPage = () => {
                               <ErrorMessage
                                 name={`beneficiaries[${index}].housePrice`}
                                 component="div"
-                                className="text-red-500 text-xs absolute top-7 left-3"
+                                className="text-red-500 text-xs absolute top-8 left-3"
                               />
                             </div>
                           </td>

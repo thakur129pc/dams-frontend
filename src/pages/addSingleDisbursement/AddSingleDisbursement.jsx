@@ -61,7 +61,6 @@ const AddSingleDisbursement = ({
   } = disbursementDetails;
 
   const dispatch = useDispatch();
-  const { userId } = useSelector((state) => state.userDetailsSlice.details);
 
   const initialValues = {
     beneficiaryId: beneficiaryId,
@@ -81,7 +80,6 @@ const AddSingleDisbursement = ({
 
   const onSubmit = (values) => {
     const payload = {
-      updatedBy: userId,
       beneficiaries: [
         {
           ...values,
@@ -204,7 +202,7 @@ const AddSingleDisbursement = ({
                       name="faldaarBhumiPrice"
                       type="number"
                       className="custom-input block w-full p-2 border rounded-md shadow-sm appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      placeholder="Enter value in Lac"
+                      placeholder="Enter amount"
                       onKeyDown={(e) => {
                         if (e.key === "-" || e.key === "e" || e.key === "+") {
                           e.preventDefault();
@@ -230,7 +228,7 @@ const AddSingleDisbursement = ({
                       name="gairFaldaarBhumiPrice"
                       type="number"
                       className="custom-input block w-full p-2 border rounded-md shadow-sm appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      placeholder="Enter value in Lac"
+                      placeholder="Enter amount"
                       onKeyDown={(e) => {
                         if (e.key === "-" || e.key === "e" || e.key === "+") {
                           e.preventDefault();
@@ -256,7 +254,7 @@ const AddSingleDisbursement = ({
                       name="housePrice"
                       type="number"
                       className="custom-input block w-full p-2 border rounded-md shadow-sm appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      placeholder="Enter value in Lac"
+                      placeholder="Enter amount"
                       onKeyDown={(e) => {
                         if (e.key === "-" || e.key === "e" || e.key === "+") {
                           e.preventDefault();
@@ -363,7 +361,7 @@ const AddSingleDisbursement = ({
                     onClick={() => setIsOpen(false)}
                     className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-md mr-2"
                   >
-                    {CONSTANTS.BUTTON.CANCLE}
+                    {CONSTANTS.BUTTON.CANCEL}
                   </button>
                   <button
                     type="submit"

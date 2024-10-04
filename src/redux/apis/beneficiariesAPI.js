@@ -129,3 +129,16 @@ export const raiseQuery = (formData) => async (dispatch) => {
     return handleApiError(error);
   }
 };
+
+// API to add legal heir
+export const addLegalHeir = (payload) => async (dispatch) => {
+  dispatch(startLoading());
+  try {
+    const response = await apiClient.post("/add-legal-heir", payload);
+    dispatch(stopLoading());
+    return response.data;
+  } catch (error) {
+    dispatch(stopLoading());
+    return handleApiError(error);
+  }
+};

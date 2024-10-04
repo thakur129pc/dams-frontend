@@ -230,7 +230,11 @@ const BeneficiariesDetailsPage = () => {
                 </div>
               </div>
               {/* Beneficiaries Details */}
-              <BeneficiaryDetails details={beneficiary} />
+              <BeneficiaryDetails
+                details={beneficiary}
+                setRecallAPI={setRecallAPI}
+                recallAPI={recallAPI}
+              />
               {/* Disbursement Details */}
               <DisbursementDetails
                 isDisbursementUploaded={beneficiary?.isDisbursementUploaded}
@@ -367,16 +371,7 @@ const BeneficiariesDetailsPage = () => {
                     {beneficiary.verificationDetails.level != userRole &&
                     beneficiary.verificationDetails.status == "0" ? (
                       <button
-                        disabled={
-                          beneficiary.isDocumentsUploaded == "0" ||
-                          beneficiary.isDisbursememtUploaded == "0"
-                        }
-                        className={`text-white py-2 px-4 rounded-lg w-[200px] ${
-                          beneficiary.isDocumentsUploaded == "0" ||
-                          beneficiary.isDisbursememtUploaded == "0"
-                            ? "bg-blue-300 cursor-not-allowed"
-                            : "bg-violet-400 hover:bg-violet-500"
-                        }`}
+                        className="text-white py-2 px-4 rounded-lg w-[200px] bg-amber-400 hover:bg-amber-500"
                         onClick={() =>
                           handleVerifyModal(beneficiary.beneficiaryId, "2")
                         }

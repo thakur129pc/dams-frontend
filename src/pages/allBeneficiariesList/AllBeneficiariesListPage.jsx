@@ -83,19 +83,19 @@ const AllBeneficiariesListPage = () => {
   // Set beneficiary type
   const setBeneficiaryType = (type) => {
     if (type === "self") {
-      return "Self";
+      return <div className="text-green-500">Self</div>;
     }
     if (type === "poa") {
-      return "POA";
+      return <div className="text-red-500">POA</div>;
     }
     if (type === "nok") {
-      return "NOK";
+      return <div className="text-red-500">NOK</div>;
     }
     if (type === "poah") {
-      return "POA-H";
+      return <div className="text-blue-500">POA-H</div>;
     }
     if (type === "nokh") {
-      return "NOK-H";
+      return <div className="text-blue-500">NOK-H</div>;
     }
   };
 
@@ -426,7 +426,7 @@ const AllBeneficiariesListPage = () => {
                   {/* Rows for each Serial Number under Khatauni Sankhya */}
                   {groupedBeneficiaries[khatauniSankhya]?.map((item) => (
                     <tr key={item.beneficiaryId}>
-                      <td className="px-3 py-2 font-medium text-gray-600 text-center">
+                      <td className="px-3 py-2 text-center">
                         {setBeneficiaryType(item.beneficiaryType)}
                       </td>
                       <td className="px-3 py-2 text-center">
