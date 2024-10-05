@@ -250,7 +250,7 @@ const BeneficiariesListPage = () => {
 
                   {/* Rows for each Serial Number under Khatauni Sankhya */}
                   {groupedBeneficiaries[khatauniSankhya]?.map((item) => (
-                    <tr key={item.serialNumber}>
+                    <tr key={item.beneficiaryId}>
                       {userRole === "0" && (
                         <td className="px-3 py-2 text-center">
                           {setDisbursementStatus(item.isDisbursementUploaded)}

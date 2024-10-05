@@ -2,7 +2,11 @@ import React from "react";
 import CONSTANTS from "../../../constants.json";
 import { formatNumberWithCommas } from "../../../utils/priceFormat";
 
-const DisbursementDetails = ({ isDisbursementUploaded, details }) => {
+const DisbursementDetails = ({
+  beneficiaryType,
+  isDisbursementUploaded,
+  details,
+}) => {
   const {
     bhumiPrice,
     faldaarBhumiPrice,
@@ -30,7 +34,9 @@ const DisbursementDetails = ({ isDisbursementUploaded, details }) => {
           </tr>
         </thead>
         <tbody className="text-sm bg-white">
-          {isDisbursementUploaded == 1 ? (
+          {isDisbursementUploaded == "1" ||
+          beneficiaryType == "poa" ||
+          beneficiaryType == "nok" ? (
             <tr>
               <td className="px-4 py-4">
                 <div className="flex gap-1">

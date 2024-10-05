@@ -18,23 +18,13 @@ const beneficiariesListSlice = createSlice({
       state.list = [];
     },
     updateVillageBeneficiariesList: (state, action) => {
-      const data = action.payload.sort(
-        (a, b) => a.serialNumber - b.serialNumber
-      );
-      state.villageBeneficiaries = [...data];
+      state.villageBeneficiaries = [...action.payload];
     },
     removeVillageBeneficiariesList: (state) => {
       state.villageBeneficiaries = [];
     },
     updateBeneficiariesDetails: (state, action) => {
-      const beneficiaryId = action.payload.id;
-      let data = action.payload.data.sort(
-        (a, b) => a.serialNumber - b.serialNumber
-      );
-      if (beneficiaryId) {
-        data = data.filter((item) => item.beneficiaryId === beneficiaryId);
-      }
-      state.beneficiariesDetails = [...data];
+      state.beneficiariesDetails = [...action.payload];
     },
     removeBeneficiariesDetails: (state) => {
       state.beneficiariesDetails = [];

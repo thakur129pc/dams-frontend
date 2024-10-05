@@ -377,7 +377,7 @@ const AllBeneficiariesListPage = () => {
         <table className="min-w-full text-left table-auto">
           <thead className="bg-gray-200 text-sm">
             <tr>
-              <th className="px-3 py-2 text-center">{CONSTANTS.TYPE}</th>
+              <th className="px-3 py-2 text-center min-w-[100px]">{CONSTANTS.TYPE}</th>
               <th className="px-3 py-2 text-center">
                 {CONSTANTS.VERIFICATION_STATUS}
               </th>

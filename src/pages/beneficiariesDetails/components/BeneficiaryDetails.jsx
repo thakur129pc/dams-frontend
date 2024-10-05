@@ -3,10 +3,13 @@ import CONSTANTS from "../../../constants.json";
 import { CustomizeString } from "../../../utils/SeprateString";
 import { useSelector } from "react-redux";
 import LegalHeirModal from "./LegalHeirModal";
+import { useNavigate, useParams } from "react-router-dom";
 
-const BeneficiaryDetails = ({ details, setRecallAPI, recallAPI }) => {
+const BeneficiaryDetails = ({ details, setRecallAPI, recallAPI, ids }) => {
   const {
     beneficiaryId,
+    benefactorId,
+    legalHeirs,
     beneficiaryType,
     beneficiaryName,
     khasraNumber,
@@ -20,6 +23,8 @@ const BeneficiaryDetails = ({ details, setRecallAPI, recallAPI }) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const navigate = useNavigate();
+  const { villageId, khatauni } = useParams();
   const { userRole } = useSelector((state) => state.userDetailsSlice.details);
 
   // Set beneficiary type
@@ -40,7 +45,6 @@ const BeneficiaryDetails = ({ details, setRecallAPI, recallAPI }) => {
       return <div className="text-blue-500">NOK-H</div>;
     }
   };
-
   return (
     <div className="bg-white rounded-lg p-6 border border-gray-200">
       <div className="flex justify-between items-center flex-wrap pb-4">
@@ -51,7 +55,7 @@ const BeneficiaryDetails = ({ details, setRecallAPI, recallAPI }) => {
             {setBeneficiaryType(beneficiaryType)}
           </div>
         </div>
-        {userRole === "0" && (
+        {userRole === "0" && beneficiaryType === "self" && (
           <button
             onClick={() => {
               setIsModalOpen(true);
@@ -59,6 +63,30 @@ const BeneficiaryDetails = ({ details, setRecallAPI, recallAPI }) => {
             className="bg-amber-400 text-white py-1 px-4 rounded-lg hover:bg-amber-500"
           >
             Add Legal Heir
+          </button>
+        )}
+        {(beneficiaryType === "poah" || beneficiaryType === "nokh") && !ids && (
+          <button
+            onClick={() => {
+              navigate(
+                `/beneficiaries-details/${villageId}/${khatauni}/${benefactorId}`
+              );
+            }}
+            className="bg-amber-400 text-white py-1 px-4 rounded-lg hover:bg-amber-500"
+          >
+            View Benefactor
+          </button>
+        )}
+        {(beneficiaryType === "poa" || beneficiaryType === "nok") && (
+          <button
+            onClick={() => {
+              navigate(`/beneficiaries-details/${villageId}/${khatauni}`, {
+                state: { ids: legalHeirs },
+              });
+            }}
+            className="bg-amber-400 text-white py-1 px-4 rounded-lg hover:bg-amber-500"
+          >
+            View Legal Heirs
           </button>
         )}
       </div>

@@ -50,7 +50,7 @@ export const getVillageBeneficiariesList = (villageId) => async (dispatch) => {
 
 // API to fetch beneficiaries details list with respect to village and selected khatauni
 export const getBeneficiariesDetails =
-  (villageId, khatauniSankhya, id) => async (dispatch) => {
+  (villageId, khatauniSankhya, id, userRole, ids) => async (dispatch) => {
     dispatch(startLoading());
     dispatch(removeBeneficiariesDetails());
     try {
@@ -58,9 +58,22 @@ export const getBeneficiariesDetails =
         params: { villageId, khatauniSankhya },
       });
       if (response.status === 200) {
-        dispatch(
-          updateBeneficiariesDetails({ data: response.data.beneficiaries, id })
+        let data = response.data.beneficiaries.sort(
+          (a, b) => a.serialNumber - b.serialNumber
         );
+        if (userRole !== "0" && !id) {
+          data = data.filter(
+            (item) =>
+              item.beneficiaryType !== "nok" && item.beneficiaryType !== "poa"
+          );
+        }
+        if (id) {
+          data = data.filter((item) => item.beneficiaryId === id);
+        }
+        if (ids) {
+          data = data.filter((item) => ids.includes(item.beneficiaryId));
+        }
+        dispatch(updateBeneficiariesDetails(data));
       }
       dispatch(stopLoading());
       return response.data;
@@ -118,9 +131,9 @@ export const raiseQuery = (formData) => async (dispatch) => {
   dispatch(startLoading());
   try {
     const response = await apiClient.post("/add-query", formData, {
-      // headers: {
-      //   "Content-Type": "multipart/form-data",
-      // },
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
     dispatch(stopLoading());
     return response.data;
