@@ -5,6 +5,7 @@ import {
   FaArrowCircleUp,
 } from "react-icons/fa";
 import { RiMoneyRupeeCircleFill } from "react-icons/ri";
+import CONSTANTS from "../../../constants.json";
 
 export default function ApproveRejectModal({
   type,
@@ -75,7 +76,9 @@ export default function ApproveRejectModal({
               }}
             />
             {messageError && (
-              <div className="text-xs text-red-500">Remark is required</div>
+              <div className="text-xs text-red-500">
+                {CONSTANTS.ERROR.REMARK}
+              </div>
             )}
           </div>
         )}

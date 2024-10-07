@@ -3,6 +3,7 @@ import * as Yup from "yup";
 import toast from "react-hot-toast";
 import { addLegalHeir } from "../../../redux/apis/beneficiariesAPI";
 import { useDispatch } from "react-redux";
+import CONSTANTS from "../../../constants.json";
 
 // Modal component
 const LegalHeirModal = ({
@@ -68,7 +69,7 @@ const LegalHeirModal = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[300px] sm:w-[350px] md:w-[380px] lg:w-[380px]">
         <h3 className="mb-4 text-gray-700 font-bold text-center">
-          Add Legal Heir
+          {CONSTANTS.PAGES_NAME.ADD_LEGAL_HEIR}
         </h3>
         <Formik
           initialValues={initialValues}
@@ -83,7 +84,7 @@ const LegalHeirModal = ({
                   htmlFor="beneficiaryType"
                   className="block text-left text-sm font-medium leading-6 text-gray-900"
                 >
-                  Change Beneficiary Type
+                  {CONSTANTS.CHANGE_TYPE}
                 </label>
                 <Field
                   as="select"
@@ -127,7 +128,7 @@ const LegalHeirModal = ({
                               htmlFor={`beneficiaries.${index}.name`}
                               className="block text-left text-sm font-medium leading-6 text-gray-800"
                             >
-                              New Beneficiary Name
+                              {CONSTANTS.NEW_NAME}
                             </label>
                             <Field
                               name={`beneficiaries.${index}.name`}
@@ -145,7 +146,7 @@ const LegalHeirModal = ({
                               htmlFor={`beneficiaries.${index}.percentage`}
                               className="block text-left text-sm font-medium leading-6 text-gray-800 mt-2"
                             >
-                              Share Percentage
+                              {CONSTANTS.SHARE_PERCENTAGE}
                             </label>
                             <Field
                               name={`beneficiaries.${index}.percentage`}
@@ -208,7 +209,7 @@ const LegalHeirModal = ({
                           });
                         }}
                       >
-                        Add Beneficiary
+                        {CONSTANTS.BUTTON.ADD_BENEFECIARY}
                       </button>
                     </>
                   )}

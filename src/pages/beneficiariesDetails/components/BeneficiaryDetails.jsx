@@ -62,7 +62,7 @@ const BeneficiaryDetails = ({ details, setRecallAPI, recallAPI, ids }) => {
             }}
             className="bg-amber-400 text-white py-1 px-4 rounded-lg hover:bg-amber-500"
           >
-            Add Legal Heir
+            {CONSTANTS.BUTTON.ADD_LEGAL_HEIR}
           </button>
         )}
         {(beneficiaryType === "poah" || beneficiaryType === "nokh") && !ids && (
@@ -74,7 +74,7 @@ const BeneficiaryDetails = ({ details, setRecallAPI, recallAPI, ids }) => {
             }}
             className="bg-amber-400 text-white py-1 px-4 rounded-lg hover:bg-amber-500"
           >
-            View Benefactor
+            {CONSTANTS.BUTTON.VIEW_BENEFACTOR}
           </button>
         )}
         {(beneficiaryType === "poa" || beneficiaryType === "nok") && (
@@ -86,7 +86,7 @@ const BeneficiaryDetails = ({ details, setRecallAPI, recallAPI, ids }) => {
             }}
             className="bg-amber-400 text-white py-1 px-4 rounded-lg hover:bg-amber-500"
           >
-            View Legal Heirs
+            {CONSTANTS.BUTTON.VIEW_LEGAL_HEIR}
           </button>
         )}
       </div>

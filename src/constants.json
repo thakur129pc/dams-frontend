@@ -38,6 +38,9 @@
   "IFSC": "IFSC",
   "PAYMENT_INVOICE": "Payment Invoice",
   "PAYMENT_STATUS": "भुगतान की स्थिति / Payment Status",
+  "CHANGE_TYPE": "Change Beneficiary Type",
+  "NEW_NAME": "New Beneficiary Name",
+  "SHARE_PERCENTAGE": "Share Percentage",
   "DOC": {
     "LAND_INDEMENITY": "Land Indemenity Bond",
     "STRUCTURE_INDEMENITY": "Structure Indemenity Bond",
@@ -49,6 +52,7 @@
   },
   "PAGES_NAME": {
     "VILLAGES_LIST": "Villages List",
+    "ADD_LEGAL_HEIR": "Add Legal Heir",
     "IMPORT_EXCEL": "Import via Excel",
     "BENEFICIARIES_LIST": "Beneficiaries List",
     "ADD_DISBURSEMENT_DETAILS": "Add Disbursement Details",
@@ -69,6 +73,7 @@
     "CHANGE_PASSWORD": "Change Password",
     "LOGIN": "Login",
     "UPLOAD_BENEFICIARIES_DATA": "Upload Beneficiary Data",
+    "ADD_BENEFECIARY": "Add Beneficiary",
     "SELECT_ALL": "Select All",
     "DOWNLOAD_INVOICE": "Download all Invoice",
     "CANCEL": "Cancel",
@@ -82,11 +87,15 @@
     "REJECT": "Reject",
     "REVOK": "Revok Rejection",
     "EXPORT_REPORT": "Export MIS Report",
-    "CLEAR_FILTERS": "Clear all filters"
+    "CLEAR_FILTERS": "Clear all filters",
+    "VIEW_LEGAL_HEIR": "View Legal Heirs",
+    "ADD_LEGAL_HEIR": "Add Legal Heirs",
+    "VIEW_BENEFACTOR": "View Benefactor"
   },
   "ERROR": {
     "EXCEL": "Must be .xlsx file similar to our ",
-    "CONSENT": "You must verify all calculations to proceed"
+    "CONSENT": "You must verify all calculations to proceed",
+    "REMARK": "Remark is required"
   },
   "LABEL": {
     "USERNAME": "Username",
