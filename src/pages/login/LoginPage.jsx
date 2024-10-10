@@ -65,7 +65,7 @@ const LoginPage = () => {
         <div className="bg-white p-5 rounded-lg">
           <img src="/logo02.png" alt="logo" width="250" />
         </div>
-        <div className="text-gray-200 font-semibold font-[cursive] text-2xl max-w-xl text-center">
+        <div className="text-gray-200 font-semibold text-2xl max-w-xl text-center">
           {CONSTANTS.PROJECT_NAME}
         </div>
       </div>

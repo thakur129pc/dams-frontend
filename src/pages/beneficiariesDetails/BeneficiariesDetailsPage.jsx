@@ -35,7 +35,7 @@ const BeneficiariesDetailsPage = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const { villageId, khatauni, id } = useParams();
-  const { ids } = location.state || "";
+  const { ids, single, name } = location.state || "";
   const { userRole } = useSelector((state) => state.userDetailsSlice.details);
   const beneficiaryList = useSelector(
     (state) => state.beneficiariesListSlice.beneficiariesDetails
@@ -119,9 +119,21 @@ const BeneficiariesDetailsPage = () => {
       <div className="flex gap-3 justify-start items-center mt-1 mb-7">
         <BackButton />
         <div className="flex-1 flex justify-between flex-wrap gap-3">
-          <h1 className="text-lg font-semibold text-gray-600">
-            {CONSTANTS.DETAILS_OF} {CONSTANTS.KHATAUNI_SANKHYA} - {khatauni}
-          </h1>
+          {ids ? (
+            <h1 className="text-lg font-semibold text-gray-600">
+              {CONSTANTS.LEGAL_HEIRS_OF} -{" "}
+              <span className="text-gray-500">{name}</span>
+            </h1>
+          ) : single ? (
+            <h1 className="text-lg font-semibold text-gray-600">
+              {CONSTANTS.BENEFACTOR_OF} -{" "}
+              <span className="text-gray-500">{name}</span>
+            </h1>
+          ) : (
+            <h1 className="text-lg font-semibold text-gray-600">
+              {CONSTANTS.DETAILS_OF} {CONSTANTS.KHATAUNI_SANKHYA} - {khatauni}
+            </h1>
+          )}
           {userRole !== "0" && (
             <div className="text-gray-700 font-semibold">
               {setRole(userRole)} {CONSTANTS.APPROVER_PROCESS}
@@ -269,7 +281,7 @@ const BeneficiariesDetailsPage = () => {
                                 {CONSTANTS.AADHAR_NUMBER}
                               </span>
                               <span className="block text-gray-500 font-semibold">
-                                {beneficiary.bankDetails.aadharNumber}
+                                {beneficiary.bankDetails.aadhaarNumber}
                               </span>
                             </div>
                             <div>

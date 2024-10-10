@@ -135,9 +135,9 @@ const UploadbeneficiariesPage = () => {
           <p className="text-sm text-gray-500 mt-2 text-center">
             {CONSTANTS.ERROR.EXCEL}
             <Link
-              to={`https://innobles.com:1002/uploads/sample-excel.xlsx`}
-              target="_blank"
+              to="https://innobles.com:1002/uploads/sample-excel.xlsx"
               download
+              rel="noopener noreferrer"
               className="text-blue-500 underline font-medium"
             >
               Excel Template

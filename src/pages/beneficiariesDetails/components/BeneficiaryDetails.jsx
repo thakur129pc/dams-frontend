@@ -69,7 +69,10 @@ const BeneficiaryDetails = ({ details, setRecallAPI, recallAPI, ids }) => {
           <button
             onClick={() => {
               navigate(
-                `/beneficiaries-details/${villageId}/${khatauni}/${benefactorId}`
+                `/beneficiaries-details/${villageId}/${khatauni}/${benefactorId}`,
+                {
+                  state: { single: true, name: beneficiaryName },
+                }
               );
             }}
             className="bg-amber-400 text-white py-1 px-4 rounded-lg hover:bg-amber-500"
@@ -81,7 +84,7 @@ const BeneficiaryDetails = ({ details, setRecallAPI, recallAPI, ids }) => {
           <button
             onClick={() => {
               navigate(`/beneficiaries-details/${villageId}/${khatauni}`, {
-                state: { ids: legalHeirs },
+                state: { ids: legalHeirs, name: beneficiaryName },
               });
             }}
             className="bg-amber-400 text-white py-1 px-4 rounded-lg hover:bg-amber-500"

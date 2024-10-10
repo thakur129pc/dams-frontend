@@ -48,7 +48,9 @@ const AddDisbursementPage = () => {
             /^\d+(\.\d{1,2})?$/.test(value)
           )
           .required("*required field"),
-        vivran: Yup.string(),
+        vivran: Yup.string()
+          .min(2, "At least 2 characters")
+          .max(150, "Max 150 characters"),
       })
     ),
   });
@@ -96,7 +98,9 @@ const AddDisbursementPage = () => {
   useEffect(() => {
     // Filter beneficiaries on the basis of selected khautani
     setFilteredBeneficiariesList(
-      filterByKhatauni(beneficiaryList, khatauni.split("-"))
+      filterByKhatauni(beneficiaryList, khatauni.split("-")).sort(
+        (a, b) => a.serialNumber - b.serialNumber
+      )
     );
   }, [beneficiaryList]);
 
@@ -240,6 +244,9 @@ const AddDisbursementPage = () => {
                   <thead className="bg-gray-200 text-sm">
                     <tr>
                       <th className="px-2 py-3 text-center">
+                        {CONSTANTS.KHATAUNI_SANKHYA}
+                      </th>
+                      <th className="px-2 py-3 text-center">
                         {CONSTANTS.SERIAL_NUMBER}
                       </th>
                       <th className="px-2 py-3">
@@ -268,6 +275,10 @@ const AddDisbursementPage = () => {
                     {filteredBeneficiariesList?.map((beneficiary, index) => {
                       return (
                         <tr key={index}>
+                          {/* Khatauni Sankhya */}
+                          <td className="px-2 py-3 text-center">
+                            {beneficiary.khatauniSankhya}
+                          </td>
                           {/* Serial Number */}
                           <td className="px-2 py-3 text-center">
                             {beneficiary.serialNumber}
@@ -403,13 +414,20 @@ const AddDisbursementPage = () => {
                           </td>
                           {/* Vivran */}
                           <td className="px-2 py-3">
-                            <Field
-                              name={`beneficiaries[${index}].vivran`}
-                              as="textarea"
-                              rows="1"
-                              className="custom-input border rounded px-2 py-2 w-28 hide-scrollbar"
-                              placeholder="--"
-                            />
+                            <div className="relative">
+                              <Field
+                                name={`beneficiaries[${index}].vivran`}
+                                as="textarea"
+                                rows="1"
+                                className="custom-input border rounded px-2 py-2 w-28 hide-scrollbar min-h-[32px] max-h-[100px]"
+                                placeholder="--"
+                              />
+                              <ErrorMessage
+                                name={`beneficiaries[${index}].vivran`}
+                                component="div"
+                                className="text-red-500 text-xs absolute bottom-[-12.5px]"
+                              />
+                            </div>
                           </td>
                         </tr>
                       );

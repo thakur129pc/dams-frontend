@@ -51,7 +51,7 @@ const VillageDetails = ({
         {/* Upload data */}
         {userRole === "0" && (
           <button
-            className="bg-blue-500 rounded-sm hover:bg-blue-600 text-white px-2 py-1 flex items-center gap-1 transition duration-200 shadow-2xl"
+            className="bg-slate-500 rounded-sm hover:bg-slate-600 text-white px-2 py-1 flex items-center gap-1 transition duration-200 shadow-2xl"
             onClick={() => navigate(`/upload-beneficiaries/${villageId}`)}
           >
             <RiFileExcel2Line size={14} />

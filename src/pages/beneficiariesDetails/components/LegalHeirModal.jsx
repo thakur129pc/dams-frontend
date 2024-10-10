@@ -18,7 +18,9 @@ const LegalHeirModal = ({
     beneficiaryType: Yup.string().required("Beneficiary type is required"),
     beneficiaries: Yup.array().of(
       Yup.object({
-        name: Yup.string().required("Beneficiary name is required"),
+        name: Yup.string()
+          .min(3, "At least 3 characters")
+          .required("Beneficiary name is required"),
         percentage: Yup.number()
           .min(1, "Minimum 1%")
           .max(100, "Maximum 100%")
@@ -115,14 +117,11 @@ const LegalHeirModal = ({
                   {({ remove, push }) => (
                     <>
                       {values.beneficiaries.map((_, index) => (
-                        <>
+                        <div key={index}>
                           <div className="text-xs text-gray-600 font-medium">
                             LEGAL HEIR - {index + 1}
                           </div>
-                          <div
-                            key={index}
-                            className="mb-4 px-3 pb-3 pt-1 bg-slate-50 rounded-lg"
-                          >
+                          <div className="mb-4 px-3 pb-3 pt-1 bg-slate-50 rounded-lg">
                             {/* New Beneficiary Name */}
                             <label
                               htmlFor={`beneficiaries.${index}.name`}
@@ -189,7 +188,7 @@ const LegalHeirModal = ({
                               </button>
                             )}
                           </div>
-                        </>
+                        </div>
                       ))}
 
                       {/* Add New Beneficiary Button */}
@@ -219,7 +218,7 @@ const LegalHeirModal = ({
               {/* Cancel and Save Buttons */}
               <div className="flex justify-between mt-4 gap-5">
                 <button
-                  className="bg-gray-300 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-400 w-full"
+                  className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 w-full"
                   onClick={() => closeModal()}
                 >
                   Cancel

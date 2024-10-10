@@ -52,9 +52,11 @@ const Pagination = ({ data, itemsPerPage, setPaginatedData }) => {
 
       <button
         onClick={handleNext}
-        disabled={currentPage === totalPages}
+        disabled={currentPage === totalPages || totalPages === 0}
         className={`px-4 py-1 rounded-md ${
-          currentPage === totalPages ? "bg-gray-300" : "bg-blue-500 text-white"
+          currentPage === totalPages || totalPages === 0
+            ? "bg-gray-300"
+            : "bg-blue-500 text-white"
         }`}
       >
         Next

@@ -2,6 +2,7 @@ import { BsHouses } from "react-icons/bs";
 import { useSelector } from "react-redux";
 import CONSTANTS from "../constants.json";
 import { NavLink } from "react-router-dom";
+import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
 import { MdPeople, MdOutlinePayments } from "react-icons/md";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
@@ -99,10 +100,7 @@ const Sidebar = ({ toggleSidebar, setToggleSidebar }) => {
             setToggleSidebar(!toggleSidebar);
           }}
         >
-          <FontAwesomeIcon
-            icon={toggleSidebar ? faArrowRight : faArrowLeft}
-            className="text-lg"
-          />
+          {toggleSidebar ? <FaAnglesRight /> : <FaAnglesLeft />}
         </button>
       </div>
     </div>

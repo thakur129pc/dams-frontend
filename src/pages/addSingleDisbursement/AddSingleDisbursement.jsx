@@ -26,7 +26,9 @@ const validationSchema = Yup.object({
       /^\d+(\.\d{1,2})?$/.test(value)
     )
     .required("*required field"),
-  vivran: Yup.string(),
+  vivran: Yup.string()
+    .min(2, "At least 2 characters")
+    .max(150, "Max 150 characters"),
   isConsent: Yup.string()
     .required("You must verify all calculations to proceed")
     .oneOf(["1"], "You must verify all calculations to proceed"),
@@ -105,7 +107,7 @@ const AddSingleDisbursement = ({
           {CONSTANTS.PAGES_NAME.ADD_DISBURSEMENT_DETAILS}
         </h2>
 
-        <div className="grid grid-cols-2 gap-4 mb-6 text-gray-700">
+        <div className="grid grid-cols-2 gap-2 mb-4 text-gray-700">
           <div>
             <p className="font-semibold">{CONSTANTS.KHATAUNI_SANKHYA}</p>
             <p className="text-gray-600">{khatauniSankhya}</p>
@@ -175,7 +177,7 @@ const AddSingleDisbursement = ({
 
             return (
               <Form className="space-y-2">
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-y-2 gap-x-5">
                   {/* Bhumi Price */}
                   <div>
                     <label
@@ -197,18 +199,21 @@ const AddSingleDisbursement = ({
                     >
                       {CONSTANTS.FALDAAR_BHUMI_PRICE}
                     </label>
-                    <Field
-                      id="faldaarBhumiPrice"
-                      name="faldaarBhumiPrice"
-                      type="number"
-                      className="custom-input block w-full p-2 border rounded-md shadow-sm appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      placeholder="Enter amount"
-                      onKeyDown={(e) => {
-                        if (e.key === "-" || e.key === "e" || e.key === "+") {
-                          e.preventDefault();
-                        }
-                      }}
-                    />
+                    <div className="flex gap-1 items-center">
+                      <span className="font-semibold text-lg">₹ </span>
+                      <Field
+                        id="faldaarBhumiPrice"
+                        name="faldaarBhumiPrice"
+                        type="number"
+                        className="custom-input block w-full p-2 border rounded-md shadow-sm appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        placeholder="Enter amount"
+                        onKeyDown={(e) => {
+                          if (e.key === "-" || e.key === "e" || e.key === "+") {
+                            e.preventDefault();
+                          }
+                        }}
+                      />
+                    </div>
                     <ErrorMessage
                       name="faldaarBhumiPrice"
                       component="div"
@@ -223,18 +228,21 @@ const AddSingleDisbursement = ({
                     >
                       {CONSTANTS.GAIR_FALDAAR_BHUMI_PRICE}
                     </label>
-                    <Field
-                      id="gairFaldaarBhumiPrice"
-                      name="gairFaldaarBhumiPrice"
-                      type="number"
-                      className="custom-input block w-full p-2 border rounded-md shadow-sm appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      placeholder="Enter amount"
-                      onKeyDown={(e) => {
-                        if (e.key === "-" || e.key === "e" || e.key === "+") {
-                          e.preventDefault();
-                        }
-                      }}
-                    />
+                    <div className="flex gap-1 items-center">
+                      <span className="font-semibold text-lg">₹ </span>
+                      <Field
+                        id="gairFaldaarBhumiPrice"
+                        name="gairFaldaarBhumiPrice"
+                        type="number"
+                        className="custom-input block w-full p-2 border rounded-md shadow-sm appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        placeholder="Enter amount"
+                        onKeyDown={(e) => {
+                          if (e.key === "-" || e.key === "e" || e.key === "+") {
+                            e.preventDefault();
+                          }
+                        }}
+                      />
+                    </div>
                     <ErrorMessage
                       name="gairFaldaarBhumiPrice"
                       component="div"
@@ -249,18 +257,21 @@ const AddSingleDisbursement = ({
                     >
                       {CONSTANTS.HOUSE_PRICE}
                     </label>
-                    <Field
-                      id="housePrice"
-                      name="housePrice"
-                      type="number"
-                      className="custom-input block w-full p-2 border rounded-md shadow-sm appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      placeholder="Enter amount"
-                      onKeyDown={(e) => {
-                        if (e.key === "-" || e.key === "e" || e.key === "+") {
-                          e.preventDefault();
-                        }
-                      }}
-                    />
+                    <div className="flex gap-1 items-center">
+                      <span className="font-semibold text-lg">₹ </span>
+                      <Field
+                        id="housePrice"
+                        name="housePrice"
+                        type="number"
+                        className="custom-input block w-full p-2 border rounded-md shadow-sm appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        placeholder="Enter amount"
+                        onKeyDown={(e) => {
+                          if (e.key === "-" || e.key === "e" || e.key === "+") {
+                            e.preventDefault();
+                          }
+                        }}
+                      />
+                    </div>
                     <ErrorMessage
                       name="housePrice"
                       component="div"
@@ -295,7 +306,7 @@ const AddSingleDisbursement = ({
                   </div>
                 </div>
                 {/* Vivran */}
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col">
                   <label
                     htmlFor="vivran"
                     className="block text-sm font-medium text-gray-700"
@@ -303,13 +314,18 @@ const AddSingleDisbursement = ({
                     {CONSTANTS.VIVRAN}
                   </label>
                   <Field
-                    className="custom-input block w-full p-2 border rounded-md shadow-sm"
+                    className="custom-input block w-full p-2 border rounded-md shadow-sm max-h-[60px] custom-scrollbar"
                     as="textarea"
                     name="vivran"
                     id="vivran"
                     rows="1"
                     cols="50"
                     placeholder="Enter your description here"
+                  />
+                  <ErrorMessage
+                    name="vivran"
+                    component="div"
+                    className="text-red-500 text-sm"
                   />
                 </div>
                 {/* Total Compensation */}

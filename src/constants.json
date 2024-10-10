@@ -27,6 +27,8 @@
   "STATUS": "Status",
   "TYPE": "Type",
   "BENEFICIARY_TYPE": "Beneficiary Type",
+  "BENEFACTOR_OF": "Benefactor of",
+  "LEGAL_HEIRS_OF": "Legal Heirs of",
   "VERIFICATION_STATUS": "Verification Status",
   "DISBURSEMENT_STATUS": "Disbursement Details Status",
   "DETAILS_OF": "Details of",

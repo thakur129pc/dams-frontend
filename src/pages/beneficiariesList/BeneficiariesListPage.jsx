@@ -124,7 +124,7 @@ const BeneficiariesListPage = () => {
                   {CONSTANTS.DISBURSEMENT_STATUS}
                 </th>
               )}
-              <th className="px-3 py-2">{CONSTANTS.SERIAL_NUMBER}</th>
+              <th className="px-3 py-2 text-center">{CONSTANTS.SERIAL_NUMBER}</th>
               <th className="px-3 py-2">{CONSTANTS.BENEFICIARY_NAME}</th>
               <th className="px-3 py-2">{CONSTANTS.KHASRA_NUMBER}</th>
               <th className="px-3 py-2">{CONSTANTS.AREA_VARIETY}</th>
@@ -256,7 +256,7 @@ const BeneficiariesListPage = () => {
                           {setDisbursementStatus(item.isDisbursementUploaded)}
                         </td>
                       )}
-                      <td className="px-3 py-2">{item.serialNumber}</td>
+                      <td className="px-3 py-2 text-center">{item.serialNumber}</td>
                       <td className="px-3 py-2">{item.beneficiaryName}</td>
                       <td className="px-3 py-2">
                         {SeprateString(item.khasraNumber)}
