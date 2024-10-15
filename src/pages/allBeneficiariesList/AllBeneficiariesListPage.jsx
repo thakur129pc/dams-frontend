@@ -135,6 +135,10 @@ const AllBeneficiariesListPage = () => {
               : verificationStatus == "2"
               ? item.verificationStatus == "0" &&
                 item.verificationLevel == userRole
+              : verificationStatus == "3"
+              ? (item.verificationStatus == "1" ||
+                  item.verificationStatus == "") &&
+                item.verificationLevel != userRole
               : item.verificationStatus == "0" &&
                 item.verificationLevel !== userRole)) &&
           (!queryStatus ||
@@ -275,7 +279,7 @@ const AllBeneficiariesListPage = () => {
               setKhatauniSankhya("");
             }}
           >
-            <option value="" disabled>
+            <option value="" disabled className="text-white bg-stone-300">
               Village
             </option>
             {villagesList?.map((village) => (
@@ -295,7 +299,7 @@ const AllBeneficiariesListPage = () => {
             disabled={!villageName}
             onChange={(e) => setKhatauniSankhya(e.target.value)}
           >
-            <option value="" disabled>
+            <option value="" disabled className="text-white bg-stone-300">
               Khatauni
             </option>
             {[...new Set(khatauniOptions)]?.map((khatauni, index) => (
@@ -315,22 +319,27 @@ const AllBeneficiariesListPage = () => {
               setVerificationStatus(e.target.value);
             }}
           >
-            <option value="" disabled>
+            <option value="" disabled className="text-white bg-stone-300">
               Verification
             </option>
             {userRole !== "0" && (
+              <option key="3" value="3">
+                Pending
+              </option>
+            )}
+            {userRole !== "0" && (
               <option key="1" value="1">
-                Verified by {setRole(userRole)}
+                Verified (By {setRole(userRole)})
               </option>
             )}
             {userRole !== "0" && (
               <option key="0" value="0">
-                Rejected by {setRole(userRole)}
+                Rejected (By {setRole(userRole)})
               </option>
             )}
             {userRole !== "3" && (
               <option key="2" value="2">
-                Rejected by {setRole((parseFloat(userRole) + 1).toString())}
+                Rejected (By {setRole((parseFloat(userRole) + 1).toString())})
               </option>
             )}
           </select>
@@ -345,7 +354,7 @@ const AllBeneficiariesListPage = () => {
               setQueryStatus(e.target.value);
             }}
           >
-            <option value="" disabled>
+            <option value="" disabled className="text-white bg-stone-300">
               Queries
             </option>
             {userRole !== "3" && (
@@ -377,7 +386,9 @@ const AllBeneficiariesListPage = () => {
         <table className="min-w-full text-left table-auto">
           <thead className="bg-gray-200 text-sm">
             <tr>
-              <th className="px-3 py-2 text-center min-w-[100px]">{CONSTANTS.TYPE}</th>
+              <th className="px-3 py-2 text-center min-w-[100px]">
+                {CONSTANTS.TYPE}
+              </th>
               <th className="px-3 py-2 text-center">
                 {CONSTANTS.VERIFICATION_STATUS}
               </th>

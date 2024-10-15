@@ -30,6 +30,7 @@ const BeneficiariesDetailsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isQueriesOpen, setIsQueriesOpen] = useState(false);
   const [modalBeneficiary, setModalBeneficiary] = useState("");
+  const [disbursementStatus, setDisbursementStatus] = useState("");
   const [beneficiaryQueries, setBeneficiaryQueries] = useState("");
 
   const dispatch = useDispatch();
@@ -55,8 +56,9 @@ const BeneficiariesDetailsPage = () => {
   };
 
   // Open Disburdement Modal
-  const handleModal = (beneficiary) => {
+  const handleModal = (beneficiary, isDisbursementUploaded) => {
     setModalBeneficiary(beneficiary);
+    setDisbursementStatus(isDisbursementUploaded);
     setIsModalOpen(true);
   };
 
@@ -212,7 +214,10 @@ const BeneficiariesDetailsPage = () => {
                       {userRole === "0" && (
                         <button
                           onClick={() => {
-                            handleModal(beneficiary);
+                            handleModal(
+                              beneficiary,
+                              beneficiary.isDisbursementUploaded
+                            );
                           }}
                           className="bg-blue-500 text-white py-1 px-4 rounded-lg hover:bg-blue-600"
                         >
@@ -479,6 +484,7 @@ const BeneficiariesDetailsPage = () => {
         <AddSingleDisbursement
           setIsOpen={setIsModalOpen}
           details={modalBeneficiary}
+          disbursementStatus={disbursementStatus}
           setRecallAPI={setRecallAPI}
           recallAPI={recallAPI}
         />

@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { addLegalHeir } from "../../../redux/apis/beneficiariesAPI";
 import { useDispatch } from "react-redux";
 import CONSTANTS from "../../../constants.json";
+import { RxCross1 } from "react-icons/rx";
 
 // Modal component
 const LegalHeirModal = ({
@@ -69,7 +70,13 @@ const LegalHeirModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[300px] sm:w-[350px] md:w-[380px] lg:w-[380px]">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[300px] sm:w-[350px] md:w-[380px] lg:w-[380px] relative">
+        <button
+          className="text-gray-500 hover:text-gray-800 absolute top-3 right-3"
+          onClick={() => closeModal()}
+        >
+          <RxCross1 />
+        </button>
         <h3 className="mb-4 text-gray-700 font-bold text-center">
           {CONSTANTS.PAGES_NAME.ADD_LEGAL_HEIR}
         </h3>

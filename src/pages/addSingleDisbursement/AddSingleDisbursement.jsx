@@ -6,6 +6,7 @@ import { formatNumberWithCommas } from "../../utils/priceFormat";
 import { uploadDisbursementDetails } from "../../redux/apis/beneficiariesAPI";
 import toast from "react-hot-toast";
 import CONSTANTS from "../../constants.json";
+import { RxCross1 } from "react-icons/rx";
 
 const validationSchema = Yup.object({
   faldaarBhumiPrice: Yup.number()
@@ -26,9 +27,7 @@ const validationSchema = Yup.object({
       /^\d+(\.\d{1,2})?$/.test(value)
     )
     .required("*required field"),
-  vivran: Yup.string()
-    .min(2, "At least 2 characters")
-    .max(150, "Max 150 characters"),
+  vivran: Yup.string().max(150, "Max 150 characters"),
   isConsent: Yup.string()
     .required("You must verify all calculations to proceed")
     .oneOf(["1"], "You must verify all calculations to proceed"),
@@ -37,6 +36,7 @@ const validationSchema = Yup.object({
 const AddSingleDisbursement = ({
   setIsOpen,
   details,
+  disbursementStatus,
   setRecallAPI,
   recallAPI,
 }) => {
@@ -101,10 +101,18 @@ const AddSingleDisbursement = ({
   };
 
   return (
-    <div className="fixed inset-0 text-sm bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+    <div className="inset-0 text-sm bg-gray-800 bg-opacity-50 flex justify-center items-center z-50 fixed">
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-xl relative m-5">
+        <button
+          className="text-gray-500 hover:text-gray-800 absolute top-3 right-3 text-lg"
+          onClick={() => setIsOpen(false)}
+        >
+          <RxCross1 />
+        </button>
         <h2 className="text-xl font-semibold mb-6 text-center text-gray-700">
-          {CONSTANTS.PAGES_NAME.ADD_DISBURSEMENT_DETAILS}
+          {disbursementStatus == "1"
+            ? CONSTANTS.BUTTON.EDIT_DISBURSEMENT_DETAILS
+            : CONSTANTS.BUTTON.ADD_DISBURSEMENT_DETAILS}
         </h2>
 
         <div className="grid grid-cols-2 gap-2 mb-4 text-gray-700">

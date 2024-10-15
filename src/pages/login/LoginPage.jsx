@@ -41,7 +41,7 @@ const LoginPage = () => {
   const initialValues = {
     username: "",
     password: "",
-    role: "0",
+    role: "",
   };
 
   const handleSubmit = (values, { setSubmitting }) => {
@@ -78,16 +78,21 @@ const LoginPage = () => {
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {({ isSubmitting }) => (
+          {({ isSubmitting, values }) => (
             <Form className="mb-8">
-              <div className="mb-6">
-                <label
-                  htmlFor="role"
-                  className="block text-left text-sm font-medium leading-6 text-gray-900"
-                >
-                  Select role
-                </label>
+              <div className="mb-6 relative">
+                {values.role && (
+                  <label
+                    htmlFor="role"
+                    className="block text-left text-sm font-medium leading-6 text-gray-900 absolute top-[-22px] left-0"
+                  >
+                    User Role
+                  </label>
+                )}
                 <Field as="select" name="role" className="custom-input">
+                  <option value="" disabled className="text-white bg-stone-300">
+                    Select Role
+                  </option>
                   {userRoles?.map((opt) => {
                     return (
                       <option

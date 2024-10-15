@@ -19,6 +19,7 @@ const AddDisbursementPage = () => {
   });
   const [isChecked, setIsChecked] = useState(false);
   const [checkError, setCheckError] = useState(false);
+  const [interestDays, setInterestDays] = useState();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -48,9 +49,7 @@ const AddDisbursementPage = () => {
             /^\d+(\.\d{1,2})?$/.test(value)
           )
           .required("*required field"),
-        vivran: Yup.string()
-          .min(2, "At least 2 characters")
-          .max(150, "Max 150 characters"),
+        vivran: Yup.string().max(150, "Max 150 characters"),
       })
     ),
   });
@@ -102,6 +101,7 @@ const AddDisbursementPage = () => {
         (a, b) => a.serialNumber - b.serialNumber
       )
     );
+    setInterestDays(beneficiaryList[0]?.interestDays);
   }, [beneficiaryList]);
 
   return (
@@ -264,7 +264,9 @@ const AddDisbursementPage = () => {
                       </th>
                       <th className="px-2 py-3">{CONSTANTS.HOUSE_PRICE}</th>
                       <th className="px-2 py-3">{CONSTANTS.TOSHAN}</th>
-                      <th className="px-2 py-3">{CONSTANTS.INTEREST}</th>
+                      <th className="px-2 py-3">
+                        {CONSTANTS.INTEREST} ({interestDays} days)
+                      </th>
                       <th className="px-2 py-3">
                         {CONSTANTS.TOTAL_COMPENSATION}
                       </th>

@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { changePassword } from "../redux/apis/authApi";
 import { removeUserDetails } from "../redux/slices/userDetailsSlice";
+import { RxCross1 } from "react-icons/rx";
 
 const ChangePassword = ({ closeModal }) => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -61,8 +62,16 @@ const ChangePassword = ({ closeModal }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="m-4 bg-white p-6 rounded-lg shadow-lg w-[300px] sm:w-[350px] md:w-[380px] lg:w-[380px] text-center">
-        <h3 className="my-4 text-gray-600 font-bold">Change Password</h3>
+      <div className="m-4 bg-white p-6 rounded-lg shadow-lg w-[300px] sm:w-[350px] md:w-[380px] lg:w-[380px] text-center relative">
+        <button
+          className="text-gray-500 hover:text-gray-800 absolute top-3 right-3 text-lg"
+          onClick={() => closeModal()}
+        >
+          <RxCross1 />
+        </button>
+        <h3 className="mt-4 mb-6 text-gray-600 font-semibold">
+          Change Password
+        </h3>
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -71,7 +80,7 @@ const ChangePassword = ({ closeModal }) => {
           {({ isSubmitting }) => (
             <Form>
               {/* Current Password */}
-              <div className="mb-6 relative">
+              <div className="mb-3 relative">
                 <label
                   htmlFor="currentPassword"
                   className="block text-left text-sm font-medium leading-6 text-gray-900"
@@ -101,7 +110,7 @@ const ChangePassword = ({ closeModal }) => {
               </div>
 
               {/* New Password */}
-              <div className="mb-6 relative">
+              <div className="mb-3 relative">
                 <label
                   htmlFor="newPassword"
                   className="block text-left text-sm font-medium leading-6 text-gray-900"
@@ -131,7 +140,7 @@ const ChangePassword = ({ closeModal }) => {
               </div>
 
               {/* Confirm Password */}
-              <div className="mb-6 relative">
+              <div className="mb-3 relative">
                 <label
                   htmlFor="confirmPassword"
                   className="block text-left text-sm font-medium leading-6 text-gray-900"
@@ -159,7 +168,7 @@ const ChangePassword = ({ closeModal }) => {
                   />
                 </span>
               </div>
-              <div className="flex gap-5 justify-between w-full">
+              <div className="flex gap-5 justify-between w-full pt-3">
                 <div className="w-2/5">
                   <button
                     className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600  w-full"
