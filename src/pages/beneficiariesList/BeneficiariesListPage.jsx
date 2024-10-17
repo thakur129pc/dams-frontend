@@ -112,8 +112,7 @@ const BeneficiariesListPage = () => {
         <div className="flex gap-3 items-center justify-center">
           <BackButton />
           <div className="text-lg font-semibold text-gray-600 mb-2 sm:mb-0">
-            {CONSTANTS.VILLAGE}: {villageName} - {CONSTANTS.TOTAL_BENEFICIARIES}
-            : {totalBeneficiaries}
+            {CONSTANTS.VILLAGE}: {villageName} - {CONSTANTS.BENEFICIARIES_LIST}
           </div>
         </div>
         {userRole === "0" && (

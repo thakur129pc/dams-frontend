@@ -41,6 +41,8 @@ const BeneficiariesDetailsPage = () => {
   const beneficiaryList = useSelector(
     (state) => state.beneficiariesListSlice.beneficiariesDetails
   );
+  const BASE_URL = "https://innobles.com:1002/uploads/";
+
   // Function to set userRole
   const setRole = (role) => {
     if (role == "1") {
@@ -324,7 +326,7 @@ const BeneficiariesDetailsPage = () => {
                                 className="border border-sky-200 bg-sky-100 transition duration-300 hover:shadow-2xl text-gray-500 rounded-lg py-1 px-3 cursor-pointer"
                                 onClick={() => {
                                   setFile(
-                                    beneficiary.bankDetails.paymentInvoice
+                                    `${BASE_URL}${beneficiary.bankDetails.paymentInvoice}`
                                   );
                                   setShowFile(true);
                                 }}
@@ -343,7 +345,7 @@ const BeneficiariesDetailsPage = () => {
                               className="border text-gray-500 bg-sky-100 border-sky-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                               onClick={() => {
                                 setFile(
-                                  beneficiary.documents.landIndemnityBond
+                                  `${BASE_URL}${beneficiary.documents.landIndemnityBond}`
                                 );
                                 setShowFile(true);
                               }}
@@ -355,7 +357,7 @@ const BeneficiariesDetailsPage = () => {
                               className="border text-gray-500 bg-sky-100 border-sky-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                               onClick={() => {
                                 setFile(
-                                  beneficiary.documents.strutureIndemnityBond
+                                  `${BASE_URL}${beneficiary.documents.strutureIndemnityBond}`
                                 );
                                 setShowFile(true);
                               }}
@@ -366,7 +368,9 @@ const BeneficiariesDetailsPage = () => {
                             <div
                               className="border text-gray-500 bg-sky-100 border-sky-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                               onClick={() => {
-                                setFile(beneficiary.documents.affidavit);
+                                setFile(
+                                  `${BASE_URL}${beneficiary.documents.affidavit}`
+                                );
                                 setShowFile(true);
                               }}
                             >
@@ -376,7 +380,9 @@ const BeneficiariesDetailsPage = () => {
                             <div
                               className="border text-gray-500 bg-sky-100 border-sky-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                               onClick={() => {
-                                setFile(beneficiary.documents.aadharCard);
+                                setFile(
+                                  `${BASE_URL}${beneficiary.documents.aadharCard}`
+                                );
                                 setShowFile(true);
                               }}
                             >
@@ -386,7 +392,9 @@ const BeneficiariesDetailsPage = () => {
                             <div
                               className="border text-gray-500 bg-sky-100 border-sky-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                               onClick={() => {
-                                setFile(beneficiary.documents.pancard);
+                                setFile(
+                                  `${BASE_URL}${beneficiary.documents.pancard}`
+                                );
                                 setShowFile(true);
                               }}
                             >
@@ -396,7 +404,9 @@ const BeneficiariesDetailsPage = () => {
                             <div
                               className="border text-gray-500 bg-sky-100 border-sky-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                               onClick={() => {
-                                setFile(beneficiary.documents.checkORpassbook);
+                                setFile(
+                                  `${BASE_URL}${beneficiary.documents.checkORpassbook}`
+                                );
                                 setShowFile(true);
                               }}
                             >
@@ -406,7 +416,9 @@ const BeneficiariesDetailsPage = () => {
                             <div
                               className="border text-gray-500 bg-sky-100 border-sky-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                               onClick={() => {
-                                setFile(beneficiary.documents.photo);
+                                setFile(
+                                  `${BASE_URL}${beneficiary.documents.photo}`
+                                );
                                 setShowFile(true);
                               }}
                             >
