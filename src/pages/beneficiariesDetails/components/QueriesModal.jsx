@@ -17,6 +17,7 @@ const QueriesModal = ({
   canQuery,
 }) => {
   const [message, setMessage] = useState("");
+  const [toastId, setToastId] = useState(null);
   const [file, setFile] = useState(null);
 
   const scrollRef = useRef(null);
@@ -55,7 +56,27 @@ const QueriesModal = ({
   };
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const file = e.target.files[0];
+    const maxSizeInBytes = 5 * 1024 * 1024;
+    const validFileTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/jpg",
+      "application/pdf",
+    ];
+    if (file) {
+      if (!validFileTypes.includes(file.type)) {
+        toast.error(
+          "Invalid file type. Please upload an image (jpg, png, jpeg) or a PDF."
+        );
+        e.target.value = "";
+      } else if (file.size > maxSizeInBytes) {
+        toast.error("Attachment size exceeds 5 MB limit.");
+        e.target.value = "";
+      } else {
+        setFile(file);
+      }
+    }
   };
 
   const renderAttachment = (attachment, bool, attachmentName) => {
@@ -262,6 +283,7 @@ const QueriesModal = ({
                 <IoAttach size={24} />
                 <input
                   type="file"
+                  accept="image/jpeg, image/jpg, image/png, application/pdf"
                   className="mb-2 hidden"
                   onChange={(e) => handleFileChange(e)}
                   id="attachDoc"
@@ -274,6 +296,14 @@ const QueriesModal = ({
                   placeholder="Write your query here..."
                   value={message}
                   onChange={(e) => {
+                    if (e.target.value.length > 500) {
+                      if (toastId) toast.dismiss(toastId);
+                      const id = toast.error(
+                        "The maximum query character length limit is 500."
+                      );
+                      setToastId(id);
+                      return;
+                    }
                     setMessage(e.target.value.replace(/\s+/g, " "));
                   }}
                 />

@@ -13,6 +13,7 @@ import toast, { Toaster } from "react-hot-toast";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [toastId, setToastId] = useState(null);
 
   const { loader } = useSelector((state) => state.loadingSlice);
 
@@ -47,9 +48,12 @@ const LoginPage = () => {
   const handleSubmit = (values, { setSubmitting }) => {
     dispatch(userLogin(values)).then((res) => {
       if (res.success) {
+        if (toastId) toast.dismiss(toastId);
         navigate("/dashboard");
       } else {
-        toast.error(res.message);
+        if (toastId) toast.dismiss(toastId);
+        const id = toast.error(res.message);
+        setToastId(id);
       }
       setSubmitting(false);
     });
