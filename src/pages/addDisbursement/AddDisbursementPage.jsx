@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { formatNumberWithCommas } from "../../utils/priceFormat";
@@ -23,7 +23,10 @@ const AddDisbursementPage = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
+  const { disbursementFilter } = location.state || "";
   const { villageName, khatauni } = useParams();
+  const [list, setList] = useState([]);
   const beneficiaryList = useSelector(
     (state) => state.beneficiariesListSlice.villageBeneficiaries
   );
@@ -95,14 +98,24 @@ const AddDisbursementPage = () => {
   }, [filteredBeneficiariesList]);
 
   useEffect(() => {
+    let data = beneficiaryList;
+    if (disbursementFilter) {
+      data = data.filter(
+        (item) => item.isDisbursementUploaded === disbursementFilter
+      );
+    }
+    setList(data);
+  }, [disbursementFilter, beneficiaryList]);
+
+  useEffect(() => {
     // Filter beneficiaries on the basis of selected khautani
     setFilteredBeneficiariesList(
-      filterByKhatauni(beneficiaryList, khatauni.split("-")).sort(
+      filterByKhatauni(list, khatauni.split("-")).sort(
         (a, b) => a.serialNumber - b.serialNumber
       )
     );
-    setInterestDays(beneficiaryList[0]?.interestDays);
-  }, [beneficiaryList]);
+    setInterestDays(list[0]?.interestDays);
+  }, [list]);
 
   return (
     <div className="p-4">

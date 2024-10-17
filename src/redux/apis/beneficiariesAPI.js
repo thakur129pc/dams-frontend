@@ -50,7 +50,8 @@ export const getVillageBeneficiariesList = (villageId) => async (dispatch) => {
 
 // API to fetch beneficiaries details list with respect to village and selected khatauni
 export const getBeneficiariesDetails =
-  (villageId, khatauniSankhya, id, userRole, ids) => async (dispatch) => {
+  (villageId, khatauniSankhya, id, userRole, ids, disbursementFilter) =>
+  async (dispatch) => {
     dispatch(startLoading());
     dispatch(removeBeneficiariesDetails());
     try {
@@ -72,6 +73,14 @@ export const getBeneficiariesDetails =
         }
         if (ids) {
           data = data.filter((item) => ids.includes(item.beneficiaryId));
+        }
+        if (disbursementFilter) {
+          data = data.filter(
+            (item) =>
+              item.isDisbursementUploaded === disbursementFilter &&
+              item.beneficiaryType !== "nok" &&
+              item.beneficiaryType !== "poa"
+          );
         }
         dispatch(updateBeneficiariesDetails(data));
       }

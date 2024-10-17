@@ -13,9 +13,13 @@ import BackButton from "../../components/BackButton";
 
 const BeneficiariesListPage = () => {
   const [allCheckbox, setAllCheckbox] = useState(false);
+  const [disbursementFilter, setDisbursementFilter] = useState("");
   const [paginatedData, setPaginatedData] = useState([]);
   const [selectedKhatauni, setSelectedKhatauni] = useState([]);
   const [groupedBeneficiaries, setGroupedBeneficiaries] = useState({});
+  const [filteredBeneficiariesList, setFilteredBeneficiariesList] = useState(
+    []
+  );
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -74,8 +78,21 @@ const BeneficiariesListPage = () => {
   };
 
   useEffect(() => {
-    setGroupedBeneficiaries(groupByKhatauni(beneficiaryList));
-  }, [beneficiaryList]);
+    // Filtered data based on selected filters
+    const filteredData = beneficiaryList?.filter((item) => {
+      return (
+        !disbursementFilter ||
+        (disbursementFilter == "1"
+          ? item.isDisbursementUploaded == "1"
+          : item.isDisbursementUploaded == "0")
+      );
+    });
+    setFilteredBeneficiariesList(filteredData);
+  }, [disbursementFilter, beneficiaryList]);
+
+  useEffect(() => {
+    setGroupedBeneficiaries(groupByKhatauni(filteredBeneficiariesList));
+  }, [filteredBeneficiariesList]);
 
   useEffect(() => {
     // Village beneficiaries API
@@ -113,7 +130,32 @@ const BeneficiariesListPage = () => {
           </button>
         )}
       </div>
-
+      {userRole == "0" && (
+        <>
+          <h2 className="text-sm block font-semibold text-gray-700">
+            Filters:
+          </h2>
+          <div className="mt-1 flex justify-start items-center gap-5 mb-4">
+            {/* Disbursement Filter */}
+            <div>
+              <select
+                className="custom-input border-gray-500 px-5 py-1 cursor-pointer"
+                value={disbursementFilter}
+                onChange={(e) => {
+                  setDisbursementFilter(e.target.value);
+                }}
+              >
+                <option value="" disabled className="text-white bg-stone-300">
+                  Disbursement Details
+                </option>
+                <option value="">All</option>
+                <option value="1">Added</option>
+                <option value="0">Pending</option>
+              </select>
+            </div>
+          </div>
+        </>
+      )}
       <div className="overflow-auto border rounded-lg shadow-lg">
         {/* Table Header */}
         <table className="min-w-full text-left table-auto">
@@ -124,7 +166,9 @@ const BeneficiariesListPage = () => {
                   {CONSTANTS.DISBURSEMENT_STATUS}
                 </th>
               )}
-              <th className="px-3 py-2 text-center">{CONSTANTS.SERIAL_NUMBER}</th>
+              <th className="px-3 py-2 text-center">
+                {CONSTANTS.SERIAL_NUMBER}
+              </th>
               <th className="px-3 py-2">{CONSTANTS.BENEFICIARY_NAME}</th>
               <th className="px-3 py-2">{CONSTANTS.KHASRA_NUMBER}</th>
               <th className="px-3 py-2">{CONSTANTS.AREA_VARIETY}</th>
@@ -225,6 +269,7 @@ const BeneficiariesListPage = () => {
                         <div className="py-1 flex gap-4 justify-center items-center">
                           <Link
                             to={`/beneficiaries-details/${villageId}/${khatauniSankhya}`}
+                            state={{ disbursementFilter: disbursementFilter }}
                             className="text-blue-600 group"
                           >
                             <div className="relative">
@@ -235,6 +280,7 @@ const BeneficiariesListPage = () => {
                           {userRole === "0" && (
                             <Link
                               to={`/add-disbursement/${villageName}/${khatauniSankhya}`}
+                              state={{ disbursementFilter: disbursementFilter }}
                               className="text-blue-600 group"
                             >
                               <div className="relative">
@@ -256,7 +302,9 @@ const BeneficiariesListPage = () => {
                           {setDisbursementStatus(item.isDisbursementUploaded)}
                         </td>
                       )}
-                      <td className="px-3 py-2 text-center">{item.serialNumber}</td>
+                      <td className="px-3 py-2 text-center">
+                        {item.serialNumber}
+                      </td>
                       <td className="px-3 py-2">{item.beneficiaryName}</td>
                       <td className="px-3 py-2">
                         {SeprateString(item.khasraNumber)}

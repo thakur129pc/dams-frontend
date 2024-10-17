@@ -36,12 +36,11 @@ const BeneficiariesDetailsPage = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const { villageId, khatauni, id } = useParams();
-  const { ids, single, name } = location.state || "";
+  const { ids, single, name, disbursementFilter } = location.state || "";
   const { userRole } = useSelector((state) => state.userDetailsSlice.details);
   const beneficiaryList = useSelector(
     (state) => state.beneficiariesListSlice.beneficiariesDetails
   );
-
   // Function to set userRole
   const setRole = (role) => {
     if (role == "1") {
@@ -107,13 +106,20 @@ const BeneficiariesDetailsPage = () => {
   useEffect(() => {
     // Beneficiaries details API
     dispatch(
-      getBeneficiariesDetails(villageId, khatauni, id, userRole, ids)
+      getBeneficiariesDetails(
+        villageId,
+        khatauni,
+        id,
+        userRole,
+        ids,
+        disbursementFilter
+      )
     ).then((res) => {
       if (!res.success) {
         toast.error(res.message);
       }
     });
-  }, [recallAPI, id, ids]);
+  }, [recallAPI, id, ids, disbursementFilter]);
 
   return (
     <div className="p-4">
