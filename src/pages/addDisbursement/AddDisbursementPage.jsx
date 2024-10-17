@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
@@ -80,9 +80,9 @@ const AddDisbursementPage = () => {
     // Set initial values for the form
     setInitialValues({
       beneficiaries: filteredBeneficiariesList?.map((item) => ({
-        beneficiaryId: item.beneficiaryId,
-        landPricePerSqMt: item.landPricePerSqMt,
-        acquiredBeneficiaryShare: item.acquiredBeneficiaryShare,
+        beneficiaryId: item.beneficiaryId || "",
+        landPricePerSqMt: item.landPricePerSqMt || 0,
+        acquiredBeneficiaryShare: item.acquiredBeneficiaryShare || "",
         interestDays: item.interestDays || 0,
         bhumiPrice: item.bhumiPrice || 0,
         faldaarBhumiPrice: item.faldaarBhumiPrice || 0,
@@ -185,7 +185,12 @@ const AddDisbursementPage = () => {
           onSubmit={onSubmit}
         >
           {({ values, setFieldValue }) => {
+            const hasRunEffectRef = useRef(false);
             useEffect(() => {
+              if (hasRunEffectRef.current || !values?.beneficiaries.length)
+                return;
+              // Mark the effect as run
+              hasRunEffectRef.current = true;
               values.beneficiaries.forEach((_, index) => {
                 const bhumiPrice =
                   parseFloat(values?.beneficiaries[index]?.bhumiPrice) || 0;
@@ -243,13 +248,74 @@ const AddDisbursementPage = () => {
                   parseFloat(total.toFixed(2))
                 );
 
-                // Set calculated interest
+                // Set vivran
                 setFieldValue(
                   `beneficiaries[${index}].vivran`,
                   values?.beneficiaries[index].vivran.replace(/\s+/g, " ")
                 );
               });
             }, [values.beneficiaries]);
+
+            const handleFieldChange = (index, field, value) => {
+              // Update the specific field's value
+              setFieldValue(
+                `beneficiaries[${index}].${field}`,
+                field === "vivran" ? value : parseFloat(value)
+              );
+
+              // Perform the calculations based on the new values
+              const updatedValues = {
+                ...values.beneficiaries[index],
+                [field]: field === "vivran" ? value : parseFloat(value),
+              };
+
+              // Get updated values for recalculations
+              const bhumiPrice = parseFloat(updatedValues?.bhumiPrice) || 0;
+              const faldaarBhumiPrice =
+                parseFloat(updatedValues?.faldaarBhumiPrice) || 0;
+              const gairFaldaarBhumiPrice =
+                parseFloat(updatedValues?.gairFaldaarBhumiPrice) || 0;
+              const housePrice = parseFloat(updatedValues?.housePrice) || 0;
+
+              // Calculate bhumi price based on the updated field
+              let bhumi =
+                updatedValues?.landPricePerSqMt *
+                parseFloat(
+                  updatedValues?.acquiredBeneficiaryShare.split("-").join("")
+                );
+
+              // Set calculated bhumi price
+              setFieldValue(
+                `beneficiaries[${index}].bhumiPrice`,
+                parseFloat(bhumi.toFixed(2))
+              );
+
+              // Calculate toshan
+              const toshan =
+                bhumiPrice +
+                faldaarBhumiPrice +
+                gairFaldaarBhumiPrice +
+                housePrice;
+              setFieldValue(
+                `beneficiaries[${index}].toshan`,
+                parseFloat(toshan.toFixed(2))
+              );
+
+              // Calculate interest
+              const timeInYears = updatedValues?.interestDays / 365;
+              const interest = (toshan * 12 * timeInYears) / 100;
+              setFieldValue(
+                `beneficiaries[${index}].interest`,
+                parseFloat(interest.toFixed(2))
+              );
+
+              // Calculate total compensation
+              const total = 2 * toshan + interest;
+              setFieldValue(
+                `beneficiaries[${index}].totalCompensation`,
+                parseFloat(total.toFixed(2))
+              );
+            };
 
             return (
               <Form id="beneficiaryForm">
@@ -309,6 +375,10 @@ const AddDisbursementPage = () => {
                               <Field
                                 name={`beneficiaries[${index}].landPricePerSqMt`}
                                 className="border rounded px-2 py-1 w-16"
+                                value={
+                                  values?.beneficiaries[index]
+                                    ?.landPricePerSqMt || 0
+                                }
                                 readOnly
                               />
                             </div>
@@ -331,6 +401,17 @@ const AddDisbursementPage = () => {
                                 type="number"
                                 className="custom-input border w-24 rounded px-2 py-1 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 placeholder="*फलदार"
+                                value={
+                                  values?.beneficiaries[index]
+                                    ?.faldaarBhumiPrice || 0
+                                }
+                                onChange={(e) =>
+                                  handleFieldChange(
+                                    index,
+                                    "faldaarBhumiPrice",
+                                    e.target.value
+                                  )
+                                }
                                 onKeyDown={(e) => {
                                   if (
                                     e.key === "-" ||
@@ -357,6 +438,17 @@ const AddDisbursementPage = () => {
                                 type="number"
                                 className="custom-input border rounded px-2 py-1 w-24 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 placeholder="*गैर फलदार"
+                                value={
+                                  values?.beneficiaries[index]
+                                    ?.gairFaldaarBhumiPrice || 0
+                                }
+                                onChange={(e) =>
+                                  handleFieldChange(
+                                    index,
+                                    "gairFaldaarBhumiPrice",
+                                    e.target.value
+                                  )
+                                }
                                 onKeyDown={(e) => {
                                   if (
                                     e.key === "-" ||
@@ -383,6 +475,16 @@ const AddDisbursementPage = () => {
                                 type="number"
                                 className="custom-input border rounded px-2 py-1 w-24 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 placeholder="*मकान"
+                                value={
+                                  values?.beneficiaries[index]?.housePrice || 0
+                                }
+                                onChange={(e) =>
+                                  handleFieldChange(
+                                    index,
+                                    "housePrice",
+                                    e.target.value
+                                  )
+                                }
                                 onKeyDown={(e) => {
                                   if (
                                     e.key === "-" ||
@@ -436,6 +538,16 @@ const AddDisbursementPage = () => {
                                 rows="1"
                                 className="custom-input border rounded px-2 py-2 w-28 hide-scrollbar min-h-[32px] max-h-[100px]"
                                 placeholder="--"
+                                value={
+                                  values?.beneficiaries[index]?.vivran || ""
+                                }
+                                onChange={(e) =>
+                                  handleFieldChange(
+                                    index,
+                                    "vivran",
+                                    e.target.value
+                                  )
+                                }
                               />
                               <ErrorMessage
                                 name={`beneficiaries[${index}].vivran`}
