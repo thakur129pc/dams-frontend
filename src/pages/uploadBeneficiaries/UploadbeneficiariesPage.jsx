@@ -14,7 +14,7 @@ import { BASE_URL } from "../../utils/axios";
 const UploadbeneficiariesPage = () => {
   // const [uploadProgress, setUploadProgress] = useState(0);
 
-  const { villageId } = useParams();
+  const { villageId, villageName } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userId = useSelector((state) => state.userDetailsSlice.details.userId);
@@ -94,7 +94,8 @@ const UploadbeneficiariesPage = () => {
       <div className="flex gap-3 justify-between items-center w-full mb-6">
         <BackButton />
         <h2 className="text-2xl font-semibold text-gray-600">
-          {CONSTANTS.PAGES_NAME.IMPORT_EXCEL}
+          {CONSTANTS.PAGES_NAME.IMPORT_EXCEL} -{" "}
+          <span className="text-gray-500">{villageName}</span>
         </h2>
         <div></div>
       </div>

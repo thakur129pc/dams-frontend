@@ -59,11 +59,11 @@ const RouterComponent = () => {
                 element: <DashboardPage />,
               },
               {
-                path: "beneficiaries-list/:villageId/:villageName/:totalBeneficiaries",
+                path: "beneficiaries-list/:villageId/:villageName",
                 element: <BeneficiariesListPage />,
               },
               {
-                path: "upload-beneficiaries/:villageId",
+                path: "upload-beneficiaries/:villageId/:villageName",
                 element:
                   userRole === "0" ? (
                     <UploadBeneficiariesPage />

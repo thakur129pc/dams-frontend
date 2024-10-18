@@ -23,7 +23,7 @@ const BeneficiariesListPage = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { villageId, villageName, totalBeneficiaries } = useParams();
+  const { villageId, villageName } = useParams();
   const { userRole } = useSelector((state) => state.userDetailsSlice.details);
 
   const beneficiaryList = useSelector(
@@ -120,7 +120,7 @@ const BeneficiariesListPage = () => {
         {userRole === "0" && (
           <button
             onClick={() => {
-              navigate(`/upload-beneficiaries/${villageId}`);
+              navigate(`/upload-beneficiaries/${villageId}/${villageName}`);
             }}
             className="bg-green-500 hover:bg-green-600 text-white rounded-md px-4 py-1 mb-2 sm:mb-0"
           >
