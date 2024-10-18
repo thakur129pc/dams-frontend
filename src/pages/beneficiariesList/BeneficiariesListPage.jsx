@@ -65,7 +65,9 @@ const BeneficiariesListPage = () => {
   const handleAddDetails = () => {
     const khatauni = selectedKhatauni.join("-");
     // villageName to be changed to villageId
-    navigate(`/add-disbursement/${villageName}/${khatauni}`);
+    navigate(`/add-disbursement/${villageName}/${khatauni}`, {
+      state: { disbursementFilter: disbursementFilter },
+    });
   };
 
   // To handle add details button
