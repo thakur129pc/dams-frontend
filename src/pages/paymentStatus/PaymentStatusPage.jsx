@@ -39,10 +39,15 @@ const PaymentStatusPage = () => {
     const filteredData = beneficiaryList?.filter((item) => {
       if (searchBy === "aadhar") {
         return item.aadhar.includes(searchTerm);
-        // return item.aadhar.toLowerCase === searchTerm.toLowerCase();
-      } else if (searchBy === "pancard") {
+      }
+      if (searchBy === "pancard") {
         return item.pancard.includes(searchTerm);
-        // return item.pancard.toLowerCase() === searchTerm.toLowerCase();
+      }
+      if (searchBy === "name") {
+        console.log("first");
+        return item.beneficiaryName
+          .toLowerCase()
+          .startsWith(searchTerm.toLowerCase());
       }
       return false;
     });
@@ -149,17 +154,33 @@ const PaymentStatusPage = () => {
           className="mt-1 block w-full custom-input py-1 px-5"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Enter Aadhar or PAN Number"
+          placeholder="Search by Name, Aadhar or PAN Number"
         />
 
         {/* Modal for Radio Buttons */}
         {isModalOpen && (
-          <div className="absolute top-full left-0 mt-2 w-[250px] bg-white border rounded-md shadow-2xl p-4 z-10">
+          <div className="absolute top-full left-0 mt-2 bg-white border rounded-md shadow-2xl p-4 z-10">
             <div className="mb-4">
               <span className="block text-sm font-medium text-gray-700">
                 Search By
               </span>
               <div className="flex space-x-4 mt-2">
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    name="searchBy"
+                    value="name"
+                    id="name"
+                    onChange={(e) => setSearchBy(e.target.value)}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                  />
+                  <label
+                    className="ml-2 block text-sm font-medium text-gray-600"
+                    htmlFor="name"
+                  >
+                    Name
+                  </label>
+                </div>
                 <div className="flex items-center">
                   <input
                     type="radio"
