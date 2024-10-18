@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import CONSTANTS from "../../../constants.json";
@@ -61,15 +60,6 @@ const VillageDetails = ({
       </div>
     </div>
   );
-};
-
-VillageDetails.propTypes = {
-  villageNameHindi: PropTypes.string,
-  khatauni: PropTypes.number.isRequired,
-  villageId: PropTypes.string.isRequired,
-  villageName: PropTypes.string.isRequired,
-  villageName: PropTypes.string.isRequired,
-  totalBeneficiaries: PropTypes.number.isRequired,
 };
 
 export default VillageDetails;
