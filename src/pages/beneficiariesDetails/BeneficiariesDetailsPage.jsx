@@ -82,6 +82,14 @@ const BeneficiariesDetailsPage = () => {
     }
   };
 
+  // Refresh query modal data
+  const refreshQueries = (beneficiaries) => {
+    const beneficiary = beneficiaries.filter(
+      (item) => item.beneficiaryId === beneficiaryId
+    );
+    setBeneficiaryQueries(beneficiary[0].queryMessages);
+  };
+
   // Verify details API
   const handleVerifyAPI = (
     beneficiaryId,
@@ -119,6 +127,10 @@ const BeneficiariesDetailsPage = () => {
     ).then((res) => {
       if (!res.success) {
         toast.error(res.message);
+      } else {
+        if (isQueriesOpen) {
+          refreshQueries(res.beneficiaries);
+        }
       }
     });
   }, [recallAPI, id, ids, disbursementFilter]);

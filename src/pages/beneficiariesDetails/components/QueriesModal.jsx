@@ -22,6 +22,7 @@ const QueriesModal = ({
 
   const scrollRef = useRef(null);
   const dispatch = useDispatch();
+  const docRef = useRef();
   const { userId } = useSelector((state) => state.userDetailsSlice.details);
 
   const setRole = (userRole) => {
@@ -47,8 +48,10 @@ const QueriesModal = ({
     dispatch(raiseQuery(formData)).then((res) => {
       if (res.success) {
         toast.success(res.message);
+        setFile(null);
+        docRef.current.value = "";
+        setMessage("");
         setRecallAPI(!recallAPI);
-        closeModal();
       } else {
         toast.error(res.message);
       }
@@ -72,7 +75,7 @@ const QueriesModal = ({
         e.target.value = "";
       } else if (file.size > maxSizeInBytes) {
         toast.error("Attachment size exceeds 5 MB limit.");
-        e.target.value = "";
+        docRef.current.value = "";
       } else {
         setFile(file);
       }
@@ -268,7 +271,10 @@ const QueriesModal = ({
 
                   {/* Close button */}
                   <RxCrossCircled
-                    onClick={() => setFile("")}
+                    onClick={() => {
+                      setFile("");
+                      docRef.current.value = "";
+                    }}
                     className="text-red-500 hover:text-white hover:bg-red-500 absolute font-extrabold right-[-6px] top-[-6px] bg-white rounded-full cursor-pointer"
                     size={20}
                   />
@@ -282,11 +288,12 @@ const QueriesModal = ({
               >
                 <IoAttach size={24} />
                 <input
+                  ref={docRef}
+                  id="attachDoc"
                   type="file"
                   accept="image/jpeg, image/jpg, image/png, application/pdf"
                   className="mb-2 hidden"
                   onChange={(e) => handleFileChange(e)}
-                  id="attachDoc"
                 />
               </label>
               <div className="w-full">
@@ -305,6 +312,11 @@ const QueriesModal = ({
                       return;
                     }
                     setMessage(e.target.value.replace(/\s+/g, " "));
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && (message || file)) {
+                      handleQueryAPI();
+                    }
                   }}
                 />
               </div>
