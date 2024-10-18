@@ -45,10 +45,12 @@ const AllBeneficiariesListPage = () => {
         return item.pancard.includes(searchTerm);
       }
       if (searchBy === "name") {
-        console.log("first");
-        return item.beneficiaryName
-          .toLowerCase()
-          .startsWith(searchTerm.toLowerCase());
+        return (
+          typeof item?.beneficiaryName === "string" &&
+          item.beneficiaryName
+            .toLowerCase()
+            .startsWith(searchTerm.toLowerCase())
+        );
       }
       return false;
     });
