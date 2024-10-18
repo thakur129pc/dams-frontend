@@ -1,8 +1,10 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
+export const BASE_URL = "https://innobles.com:1002";
+
 const apiClient = axios.create({
-  baseURL: "https://innobles.com:1002/api/v1/webUser/",
+  baseURL: `${BASE_URL}/api/v1/webUser/`,
   // baseURL: "http://localhost:4000/api/v1/webUser/",
 });
 

@@ -7,6 +7,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import CONSTANTS from "../../constants.json";
 import { uploadExcel } from "../../redux/apis/excelAPI";
 import BackButton from "../../components/BackButton";
+import { BASE_URL } from "../../utils/axios";
 
 // const CHUNK_SIZE = 1 * 1024 * 1024; // 1MB per chunk
 
@@ -135,7 +136,7 @@ const UploadbeneficiariesPage = () => {
           <p className="text-sm text-gray-500 mt-2 text-center">
             {CONSTANTS.ERROR.EXCEL}
             <Link
-              to="https://innobles.com:1002/uploads/sample-excel.xlsx"
+              to={`${BASE_URL}/uploads/sample-excel.xlsx`}
               download
               rel="noopener noreferrer"
               className="text-blue-500 underline font-medium"
