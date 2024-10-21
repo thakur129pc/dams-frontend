@@ -332,6 +332,9 @@ const AddDisbursementPage = () => {
                         {CONSTANTS.BENEFICIARY_NAME}
                       </th>
                       <th className="px-2 py-3">
+                        {CONSTANTS.ACQUIRED_BENEFICIARY_SHARE} (SqMt)
+                      </th>
+                      <th className="px-2 py-3">
                         {CONSTANTS.LAND_PRICE_PER_SQ_MT}
                       </th>
                       <th className="px-2 py-3">{CONSTANTS.BHUMI_PRICE}</th>
@@ -367,6 +370,18 @@ const AddDisbursementPage = () => {
                           {/* Beneficiary Name */}
                           <td className="px-2 py-3 min-w-[150px]">
                             {beneficiary.beneficiaryName}
+                          </td>
+                          {/* Acquired Beneficiary Share */}
+                          <td className="px-2 py-3">
+                            <div>
+                              {parseFloat(
+                                values?.beneficiaries[
+                                  index
+                                ]?.acquiredBeneficiaryShare
+                                  .split("-")
+                                  .join("")
+                              )}
+                            </div>
                           </td>
                           {/* Price Per Sq Mt */}
                           <td className="px-2 py-3">

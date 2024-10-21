@@ -300,7 +300,7 @@ const BeneficiariesDetailsPage = () => {
                     {userRole !== "0" &&
                       beneficiary?.isDocumentsUploaded == "1" && (
                         <>
-                          <div className="flex flex-wrap gap-5 justify-between font-medium">
+                          <div className="flex flex-wrap gap-5 justify-between items-center font-medium">
                             <div>
                               <span className="block text-gray-600">
                                 {CONSTANTS.AADHAR_NUMBER}
@@ -337,6 +337,9 @@ const BeneficiariesDetailsPage = () => {
                               <div
                                 className="border border-sky-200 bg-sky-100 transition duration-300 hover:shadow-2xl text-gray-500 rounded-lg py-1 px-3 cursor-pointer"
                                 onClick={() => {
+                                  if (!beneficiary.bankDetails.paymentInvoice) {
+                                    return;
+                                  }
                                   setFile(
                                     `${BASE_URL}/uploads/${beneficiary.bankDetails.paymentInvoice}`
                                   );
@@ -352,7 +355,7 @@ const BeneficiariesDetailsPage = () => {
                             </div>
                           </div>
                           {/* Documents */}
-                          <div className="flex flex-wrap gap-5 flex-auto font-medium">
+                          <div className="flex flex-wrap gap-5 flex-auto font-medium py-5">
                             <div
                               className="border text-gray-500 bg-sky-100 border-sky-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                               onClick={() => {
@@ -369,7 +372,7 @@ const BeneficiariesDetailsPage = () => {
                               className="border text-gray-500 bg-sky-100 border-sky-200 transition duration-300 hover:shadow-2xl cursor-pointer rounded-lg px-3 py-1 hover:text-gray-600"
                               onClick={() => {
                                 setFile(
-                                  `${BASE_URL}/uploads/${beneficiary.documents.strutureIndemnityBond}`
+                                  `${BASE_URL}/uploads/${beneficiary.documents.structureIndemnityBond}`
                                 );
                                 setShowFile(true);
                               }}
@@ -444,8 +447,8 @@ const BeneficiariesDetailsPage = () => {
                     {userRole !== "0" &&
                       !(beneficiary.verificationDetails.level == userRole) && (
                         <div className="flex justify-start md:justify-end flex-wrap gap-5">
-                          {beneficiary.verificationDetails.level != userRole &&
-                          beneficiary.verificationDetails.status == "0" ? (
+                          {beneficiary.verificationDetails.level !== userRole &&
+                          beneficiary.verificationDetails.status === "0" ? (
                             <button
                               className="text-white py-2 px-4 rounded-lg w-[200px] bg-amber-400 hover:bg-amber-500"
                               onClick={() =>
@@ -461,12 +464,12 @@ const BeneficiariesDetailsPage = () => {
                             <>
                               <button
                                 disabled={
-                                  beneficiary.isDocumentsUploaded == "0" ||
-                                  beneficiary.isDisbursememtUploaded == "0"
+                                  beneficiary.isDocumentsUploaded === "0" ||
+                                  beneficiary.isDisbursementUploaded === "0"
                                 }
                                 className={`text-white py-2 px-4 rounded-lg w-[200px] ${
-                                  beneficiary.isDocumentsUploaded == "0" ||
-                                  beneficiary.isDisbursememtUploaded == "0"
+                                  beneficiary.isDocumentsUploaded === "0" ||
+                                  beneficiary.isDisbursementUploaded === "0"
                                     ? "bg-blue-300 cursor-not-allowed"
                                     : "bg-blue-500 hover:bg-blue-600"
                                 }`}
@@ -481,12 +484,12 @@ const BeneficiariesDetailsPage = () => {
                               </button>
                               <button
                                 disabled={
-                                  beneficiary.isDocumentsUploaded == "0" ||
-                                  beneficiary.isDisbursememtUploaded == "0"
+                                  beneficiary.isDocumentsUploaded === "0" ||
+                                  beneficiary.isDisbursementUploaded === "0"
                                 }
                                 className={`text-white py-2 px-4 rounded-lg w-[200px] ${
-                                  beneficiary.isDocumentsUploaded == "0" ||
-                                  beneficiary.isDisbursememtUploaded == "0"
+                                  beneficiary.isDocumentsUploaded === "0" ||
+                                  beneficiary.isDisbursementUploaded === "0"
                                     ? "bg-red-300 cursor-not-allowed"
                                     : "bg-red-500 hover:bg-red-600"
                                 }`}

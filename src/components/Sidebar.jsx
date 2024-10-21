@@ -65,7 +65,7 @@ const Sidebar = ({ toggleSidebar, setToggleSidebar }) => {
           </div>
         </NavLink>
         {/* PAYMENT STATUS */}
-        {userRole !== "0" && (
+        {userRole === "3" && (
           <NavLink
             to="/payment-status"
             className={({ isActive }) =>

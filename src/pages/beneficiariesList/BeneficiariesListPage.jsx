@@ -231,7 +231,7 @@ const BeneficiariesListPage = () => {
                         >
                           <div className="flex gap-1 items-center justify-center">
                             <MdOutlineLibraryAdd size={16} />
-                            {CONSTANTS.BUTTON.ADD_DETAILS}
+                            {CONSTANTS.BUTTON.ADD_DISBURSEMENT_DETAILS}
                           </div>
                         </button>
                       )}
@@ -274,7 +274,7 @@ const BeneficiariesListPage = () => {
                             className="text-blue-600 group"
                           >
                             <div className="relative">
-                              {CONSTANTS.BUTTON.VIEW_DETAILS}
+                              {CONSTANTS.BUTTON.VIEW_BENEFICIARIES_DETAILS}
                               <div className="absolute bottom-0 left-1/2 w-0 h-[2px] bg-blue-500 transition-all duration-300 group-hover:left-0 group-hover:w-full"></div>
                             </div>
                           </Link>
@@ -285,7 +285,7 @@ const BeneficiariesListPage = () => {
                               className="text-blue-600 group"
                             >
                               <div className="relative">
-                                {CONSTANTS.BUTTON.EDIT_DETAILS}
+                                {CONSTANTS.BUTTON.ADD_DISBURSEMENT_DETAILS}
                                 <div className="absolute bottom-0 left-1/2 w-0 h-[2px] bg-blue-500 transition-all duration-300 group-hover:left-0 group-hover:w-full"></div>
                               </div>
                             </Link>

@@ -97,7 +97,7 @@ const QueriesModal = ({
           <img
             src={attachment}
             alt="attachment"
-            className="max-w-[225px] rounded-lg my-2 h-auto object-contain transition duration-300 hover:shadow-2xl"
+            className="w-[225px] rounded-lg my-2 h-auto object-contain transition duration-300 hover:shadow-2xl"
           ></img>
         </Link>
       );
@@ -111,7 +111,7 @@ const QueriesModal = ({
             bool ? "justify-end" : "justify-start"
           }`}
         >
-          <div className="relative flex items-center justify-start gap-1 max-w-[225px] transition duration-300 rounded-lg my-2 p-2 shadow-md backdrop-blur-lg text-gray-700 bg-white/80 hover:shadow-2xl">
+          <div className="relative flex items-center justify-start gap-1 w-[225px] transition duration-300 rounded-lg my-2 p-2 shadow-md backdrop-blur-lg text-gray-700 bg-white/80 hover:shadow-2xl">
             <span className="text-green-600">
               <IoDocument size={24} />
             </span>

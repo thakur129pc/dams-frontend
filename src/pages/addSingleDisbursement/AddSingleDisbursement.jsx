@@ -43,6 +43,7 @@ const AddSingleDisbursement = ({
   const {
     beneficiaryId,
     khatauniSankhya,
+    serialNumber,
     beneficiaryName,
     khasraNumber,
     landPricePerSqMt,
@@ -102,7 +103,7 @@ const AddSingleDisbursement = ({
 
   return (
     <div className="inset-0 text-sm bg-gray-800 bg-opacity-50 flex justify-center items-center z-50 fixed">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-xl relative m-5">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl relative m-5">
         <button
           className="text-gray-500 hover:text-gray-800 absolute top-3 right-3 text-lg"
           onClick={() => setIsOpen(false)}
@@ -115,10 +116,14 @@ const AddSingleDisbursement = ({
             : CONSTANTS.BUTTON.ADD_DISBURSEMENT_DETAILS}
         </h2>
 
-        <div className="grid grid-cols-2 gap-2 mb-4 text-gray-700">
+        <div className="grid grid-cols-2 gap-2 mb-2 text-gray-700">
           <div>
             <p className="font-semibold">{CONSTANTS.KHATAUNI_SANKHYA}</p>
             <p className="text-gray-600">{khatauniSankhya}</p>
+          </div>
+          <div>
+            <p className="font-semibold">{CONSTANTS.SERIAL_NUMBER}</p>
+            <p className="text-gray-600">{serialNumber}</p>
           </div>
           <div>
             <p className="font-semibold">{CONSTANTS.BENEFICIARY_NAME}</p>
@@ -127,6 +132,15 @@ const AddSingleDisbursement = ({
           <div>
             <p className="font-semibold">{CONSTANTS.KHASRA_NUMBER}</p>
             <p className="text-gray-600">{khasraNumber}</p>
+          </div>
+          <div>
+            <p className="font-semibold">
+              {CONSTANTS.ACQUIRED_BENEFICIARY_SHARE} (SqMt)
+            </p>
+            <p className="text-gray-600">
+              {" "}
+              {parseFloat(acquiredBeneficiaryShare.split("-").join(""))}
+            </p>
           </div>
           <div>
             <p className="font-semibold">{CONSTANTS.LAND_PRICE_PER_SQ_MT}</p>
@@ -184,8 +198,8 @@ const AddSingleDisbursement = ({
             }, [values]);
 
             return (
-              <Form className="space-y-2">
-                <div className="grid grid-cols-2 gap-y-2 gap-x-5">
+              <Form className="space-y-1">
+                <div className="grid grid-cols-2 gap-y-1 gap-x-5">
                   {/* Bhumi Price */}
                   <div>
                     <label
@@ -225,7 +239,7 @@ const AddSingleDisbursement = ({
                     <ErrorMessage
                       name="faldaarBhumiPrice"
                       component="div"
-                      className="text-red-500 text-sm"
+                      className="text-red-500 text-xs"
                     />
                   </div>
                   {/* Gair faldaar bhumi */}
@@ -254,7 +268,7 @@ const AddSingleDisbursement = ({
                     <ErrorMessage
                       name="gairFaldaarBhumiPrice"
                       component="div"
-                      className="text-red-500 text-sm"
+                      className="text-red-500 text-xs"
                     />
                   </div>
                   {/* House */}
@@ -283,7 +297,7 @@ const AddSingleDisbursement = ({
                     <ErrorMessage
                       name="housePrice"
                       component="div"
-                      className="text-red-500 text-sm"
+                      className="text-red-500 text-xs"
                     />
                   </div>
                   {/* Automatically calculated Toshan */}
@@ -305,7 +319,7 @@ const AddSingleDisbursement = ({
                       htmlFor="interest"
                       className="block text-sm font-medium text-gray-700"
                     >
-                      {CONSTANTS.INTEREST}
+                      {CONSTANTS.INTEREST} ({interestDays} days)
                     </label>
                     <div className="custom-input block w-full p-2 border border-gray-300 rounded-md shadow-sm">
                       <span className="font-semibold">₹ </span>
@@ -322,7 +336,7 @@ const AddSingleDisbursement = ({
                     {CONSTANTS.VIVRAN}
                   </label>
                   <Field
-                    className="custom-input block w-full p-2 border rounded-md shadow-sm max-h-[60px] custom-scrollbar"
+                    className="custom-input block w-full p-2 border rounded-md shadow-sm max-h-[38px] custom-scrollbar"
                     as="textarea"
                     name="vivran"
                     id="vivran"
@@ -333,19 +347,19 @@ const AddSingleDisbursement = ({
                   <ErrorMessage
                     name="vivran"
                     component="div"
-                    className="text-red-500 text-sm"
+                    className="text-red-500 text-xs"
                   />
                 </div>
                 {/* Total Compensation */}
                 <div className="flex gap-5 mt-2">
                   <label
                     htmlFor="interest"
-                    className="block text-lg font-semibold text-gray-700"
+                    className="block text-base font-semibold text-gray-700"
                   >
                     {CONSTANTS.TOTAL_COMPENSATION}
                   </label>
-                  <div className="text-lg font-semibold text-gray-600">-</div>
-                  <div className="text-lg font-semibold text-gray-500">
+                  <div className="text-base font-semibold text-gray-600">-</div>
+                  <div className="text-base font-semibold text-gray-500">
                     <span className="font-semibold">₹ </span>
                     {formatNumberWithCommas(values.totalCompensation)}
                   </div>
@@ -353,7 +367,7 @@ const AddSingleDisbursement = ({
 
                 {/* Verification Checkbox */}
                 <div>
-                  <div className="flex items-center mt-4">
+                  <div className="flex items-center mt-2">
                     <Field
                       type="checkbox"
                       name="isConsent"
@@ -374,7 +388,7 @@ const AddSingleDisbursement = ({
                   <ErrorMessage
                     name="isConsent"
                     component="div"
-                    className="text-red-500 text-sm"
+                    className="text-red-500 text-xs"
                   />
                 </div>
 

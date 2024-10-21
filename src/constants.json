@@ -64,11 +64,10 @@
   },
   "BUTTON": {
     "VIEW_DETAILS": "View Details",
+    "VIEW_BENEFICIARIES_DETAILS": "View Beneficiaries Details",
     "VIEW_LIST": "View List",
     "VIEW_MORE": "View More",
     "VIEW": "View",
-    "ADD_DETAILS": "Add Details",
-    "EDIT_DETAILS": "Edit Details",
     "SAVE_DETAILS": "Save Details",
     "UPLOAD_DATA": "Upload Excel",
     "SELECT_FILE": "Select File to Import",
