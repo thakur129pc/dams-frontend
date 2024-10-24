@@ -260,13 +260,18 @@ const AddDisbursementPage = () => {
               // Update the specific field's value
               setFieldValue(
                 `beneficiaries[${index}].${field}`,
-                field === "vivran" ? value : parseFloat(value)
+                field === "vivran"
+                  ? value.replace(/\s+/g, " ")
+                  : parseFloat(value)
               );
 
               // Perform the calculations based on the new values
               const updatedValues = {
                 ...values.beneficiaries[index],
-                [field]: field === "vivran" ? value : parseFloat(value),
+                [field]:
+                  field === "vivran"
+                    ? value.replace(/\s+/g, " ")
+                    : parseFloat(value),
               };
 
               // Get updated values for recalculations

@@ -6,7 +6,6 @@ import { useDispatch } from "react-redux";
 import CONSTANTS from "../../../constants.json";
 import { RxCross1 } from "react-icons/rx";
 
-// Modal component
 const LegalHeirModal = ({
   closeModal,
   beneficiaryId,
@@ -15,20 +14,42 @@ const LegalHeirModal = ({
 }) => {
   const dispatch = useDispatch();
 
+  // Validation schema for the legal heirs
   const validationSchema = Yup.object({
     beneficiaryType: Yup.string().required("Beneficiary type is required"),
-    beneficiaries: Yup.array().of(
+    legalHeirs: Yup.array().of(
       Yup.object({
         name: Yup.string()
           .min(3, "At least 3 characters")
           .required("Beneficiary name is required"),
-        percentage: Yup.number()
-          .min(1, "Minimum 1%")
+        bhumi: Yup.number()
+          .min(0, "Minimum 0%")
           .max(100, "Maximum 100%")
           .test("is-decimal", "Up to 2 decimals allowed", (value) =>
             /^\d+(\.\d{1,2})?$/.test(value)
           )
-          .required("Share percentage is required"),
+          .required("*required"),
+        faldaarBhumi: Yup.number()
+          .min(0, "Minimum 0%")
+          .max(100, "Maximum 100%")
+          .test("is-decimal", "Up to 2 decimals allowed", (value) =>
+            /^\d+(\.\d{1,2})?$/.test(value)
+          )
+          .required("*required"),
+        gairFaldaarBhumi: Yup.number()
+          .min(0, "Minimum 0%")
+          .max(100, "Maximum 100%")
+          .test("is-decimal", "Up to 2 decimals allowed", (value) =>
+            /^\d+(\.\d{1,2})?$/.test(value)
+          )
+          .required("*required"),
+        makaanShare: Yup.number()
+          .min(0, "Minimum 0%")
+          .max(100, "Maximum 100%")
+          .test("is-decimal", "Up to 2 decimals allowed", (value) =>
+            /^\d+(\.\d{1,2})?$/.test(value)
+          )
+          .required("*required"),
       })
     ),
   });
@@ -36,7 +57,15 @@ const LegalHeirModal = ({
   const initialValues = {
     beneficiaryId: beneficiaryId,
     beneficiaryType: "poa",
-    beneficiaries: [{ name: "", percentage: 100 }],
+    legalHeirs: [
+      {
+        name: "",
+        bhumi: 100,
+        faldaarBhumi: 100,
+        gairFaldaarBhumi: 100,
+        makaanShare: 100,
+      },
+    ],
   };
 
   const userTypes = [
@@ -44,40 +73,78 @@ const LegalHeirModal = ({
     { value: "nok", label: "Next of kin (NOK)" },
   ];
 
+  // Handle form submission
   const handleSubmit = (values, { setSubmitting }) => {
-    const total = values.beneficiaries.reduce(
-      (acc, beneficiary) => acc + Number(beneficiary.percentage),
+    const totalBhumi = values.legalHeirs.reduce(
+      (acc, beneficiary) => acc + Number(beneficiary.bhumi),
       0
     );
-    if (total !== 100) {
+    const totalFaldaarBhumi = values.legalHeirs.reduce(
+      (acc, beneficiary) => acc + Number(beneficiary.faldaarBhumi),
+      0
+    );
+    const totalGairFaldaarBhumi = values.legalHeirs.reduce(
+      (acc, beneficiary) => acc + Number(beneficiary.gairFaldaarBhumi),
+      0
+    );
+    const totalMakaanShare = values.legalHeirs.reduce(
+      (acc, beneficiary) => acc + Number(beneficiary.makaanShare),
+      0
+    );
+
+    if (totalBhumi !== 100) {
       toast.error(
-        "Total share percentage of all the beneficiaries must be 100%"
+        "The total percentage of bhumi divided among the legal heirs must equal 100%."
+      );
+    } else if (totalFaldaarBhumi !== 100) {
+      toast.error(
+        "The total percentage of faldaar-bhumi divided among the legal heirs must equal 100%."
+      );
+    } else if (totalGairFaldaarBhumi !== 100) {
+      toast.error(
+        "The total percentage of gairfaldaar-bhumi divided among the legal heirs must equal 100%."
+      );
+    } else if (totalMakaanShare !== 100) {
+      toast.error(
+        "The total percentage of makaan divided among the legal heirs must equal 100%."
       );
     } else {
-      // Add Legal Heir API
-      dispatch(addLegalHeir(values)).then((res) => {
-        if (res.success) {
-          toast.success(res.message);
-          setRecallAPI(!recallAPI);
-          closeModal();
-        } else {
-          toast.error(res.message);
-        }
-      });
+      console.log(values.legalHeirs, "values.legalHeirs");
+      const allValid = values.legalHeirs.every((beneficiary) =>
+        ["bhumi", "faldaarBhumi", "gairFaldaarBhumi", "makaanShare"].some(
+          (field) => beneficiary[field] >= 1
+        )
+      );
+      if (!allValid) {
+        toast.error(
+          "Every legal heir must have at least 1% share in any of the field (bhumi, faldaar-bhumi, gairfaldaar-bhumi, makaan)."
+        );
+      } else {
+        console.log(values, "---");
+        dispatch(addLegalHeir(values)).then((res) => {
+          if (res.success) {
+            toast.success(res.message);
+            setRecallAPI(!recallAPI);
+            closeModal();
+          } else {
+            toast.error(res.message);
+          }
+        });
+      }
     }
     setSubmitting(false);
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[300px] sm:w-[350px] md:w-[380px] lg:w-[380px] relative">
+      <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg relative">
         <button
           className="text-gray-500 hover:text-gray-800 absolute top-3 right-3"
           onClick={() => closeModal()}
         >
           <RxCross1 />
         </button>
-        <h3 className="mb-4 text-gray-700 font-bold text-center">
+        <h3 className="mb-4 text-xl text-gray-700 font-bold text-center">
           {CONSTANTS.PAGES_NAME.ADD_LEGAL_HEIR}
         </h3>
         <Formik
@@ -88,7 +155,7 @@ const LegalHeirModal = ({
           {({ isSubmitting, values, setFieldValue }) => (
             <Form>
               {/* Beneficiary Type Dropdown */}
-              <div className="mb-6">
+              <div>
                 <label
                   htmlFor="beneficiaryType"
                   className="block text-left text-sm font-medium leading-6 text-gray-900"
@@ -98,102 +165,227 @@ const LegalHeirModal = ({
                 <Field
                   as="select"
                   name="beneficiaryType"
-                  className="custom-input"
+                  className="custom-input px-3 py-2"
                 >
-                  {userTypes?.map((opt) => {
-                    return (
-                      <option
-                        value={opt.value}
-                        label={opt.label}
-                        key={opt.value}
-                      ></option>
-                    );
-                  })}
+                  {userTypes?.map((opt) => (
+                    <option
+                      value={opt.value}
+                      label={opt.label}
+                      key={opt.value}
+                    />
+                  ))}
                 </Field>
                 <ErrorMessage
                   name="beneficiaryType"
                   component="div"
-                  className="error"
+                  className="text-red-500 text-xs mt-1"
                 />
               </div>
 
-              <div className="max-h-[300px] overflow-y-scroll custom-scrollbar pr-1">
-                {" "}
-                {/* Beneficiaries Field Array */}
-                <FieldArray name="beneficiaries">
+              <div className="max-h-[350px] overflow-y-scroll pr-1 custom-scrollbar mt-5">
+                <FieldArray name="legalHeirs">
                   {({ remove, push }) => (
                     <>
-                      {values.beneficiaries.map((_, index) => (
-                        <div key={index}>
-                          <div className="text-xs text-gray-600 font-medium">
-                            LEGAL HEIR - {index + 1}
-                          </div>
-                          <div className="mb-4 px-3 pb-3 pt-1 bg-slate-50 rounded-lg">
-                            {/* New Beneficiary Name */}
-                            <label
-                              htmlFor={`beneficiaries.${index}.name`}
-                              className="block text-left text-sm font-medium leading-6 text-gray-800"
-                            >
-                              {CONSTANTS.NEW_NAME}
-                            </label>
-                            <Field
-                              name={`beneficiaries.${index}.name`}
-                              className="custom-input"
-                              placeholder="Enter name"
-                            />
-                            <ErrorMessage
-                              name={`beneficiaries.${index}.name`}
-                              component="div"
-                              className="text-red-500 text-xs"
-                            />
-
-                            {/* Share Percentage */}
-                            <label
-                              htmlFor={`beneficiaries.${index}.percentage`}
-                              className="block text-left text-sm font-medium leading-6 text-gray-800 mt-2"
-                            >
-                              {CONSTANTS.SHARE_PERCENTAGE}
-                            </label>
-                            <Field
-                              name={`beneficiaries.${index}.percentage`}
-                              type="number"
-                              className="custom-input  appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                              placeholder="Enter percentage"
-                              onChange={(e) => {
-                                setFieldValue(
-                                  `beneficiaries.${index}.percentage`,
-                                  e.target.value &&
-                                    parseFloat(
-                                      Number(e.target.value).toFixed(2)
-                                    )
-                                );
-                              }}
-                              onKeyDown={(e) => {
-                                if (
-                                  e.key === "-" ||
-                                  e.key === "e" ||
-                                  e.key === "+"
-                                ) {
-                                  e.preventDefault();
-                                }
-                              }}
-                              onWheel={(e) => e.target.blur()}
-                            />
-                            <ErrorMessage
-                              name={`beneficiaries.${index}.percentage`}
-                              component="div"
-                              className="text-red-500 text-xs"
-                            />
-
+                      {values.legalHeirs.map((_, index) => (
+                        <div key={index} className="pb-5">
+                          <div className="flex gap-5 mb-1">
+                            <div className="text-sm text-gray-600 font-semibold">
+                              Legal Heir - {index + 1}
+                            </div>
                             {index > 0 && (
                               <button
                                 type="button"
-                                className="text-blue-500 mt-2 text-sm"
+                                className="text-red-500 text-sm"
                                 onClick={() => remove(index)}
                               >
                                 Remove
                               </button>
                             )}
+                          </div>
+                          <div className="px-4 pb-5 pt-3 bg-slate-50 rounded-lg">
+                            {/*Legal Heir Name */}
+                            <label
+                              htmlFor={`legalHeirs.${index}.name`}
+                              className="block text-xs font-medium text-gray-700"
+                            >
+                              Legal Heir Name
+                            </label>
+                            <Field
+                              name={`legalHeirs.${index}.name`}
+                              className="custom-input px-3 py-2 text-sm"
+                              placeholder="Enter name"
+                              value={values.legalHeirs[index].name}
+                              onChange={(e) => {
+                                setFieldValue(
+                                  `legalHeirs.${index}.name`,
+                                  e.target.value &&
+                                    e.target.value.replace(/\s+/g, " ")
+                                );
+                              }}
+                            />
+                            <ErrorMessage
+                              name={`legalHeirs.${index}.name`}
+                              component="div"
+                              className="text-red-500 text-xs"
+                            />
+
+                            <div className="grid grid-cols-2 gap-4 mt-4">
+                              <div>
+                                <label
+                                  htmlFor={`legalHeirs.${index}.bhumi`}
+                                  className="block text-xs font-medium text-gray-700"
+                                >
+                                  Bhumi Share %age
+                                </label>
+                                <Field
+                                  name={`legalHeirs.${index}.bhumi`}
+                                  type="number"
+                                  className="custom-input px-3 py-2 text-sm appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                  placeholder="Enter percentage"
+                                  onChange={(e) => {
+                                    setFieldValue(
+                                      `legalHeirs.${index}.bhumi`,
+                                      e.target.value &&
+                                        parseFloat(
+                                          Number(e.target.value).toFixed(2)
+                                        )
+                                    );
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (
+                                      e.key === "-" ||
+                                      e.key === "e" ||
+                                      e.key === "+"
+                                    ) {
+                                      e.preventDefault();
+                                    }
+                                  }}
+                                  onWheel={(e) => e.target.blur()}
+                                />
+                                <ErrorMessage
+                                  name={`legalHeirs.${index}.bhumi`}
+                                  component="div"
+                                  className="text-red-500 text-xs"
+                                />
+                              </div>
+
+                              <div>
+                                <label
+                                  htmlFor={`legalHeirs.${index}.faldaarBhumi`}
+                                  className="block text-xs font-medium text-gray-700"
+                                >
+                                  Faldaar Bhumi Share %age
+                                </label>
+                                <Field
+                                  name={`legalHeirs.${index}.faldaarBhumi`}
+                                  type="number"
+                                  className="custom-input px-3 py-2 text-sm appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                  placeholder="Enter percentage"
+                                  onChange={(e) => {
+                                    setFieldValue(
+                                      `legalHeirs.${index}.faldaarBhumi`,
+                                      e.target.value &&
+                                        parseFloat(
+                                          Number(e.target.value).toFixed(2)
+                                        )
+                                    );
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (
+                                      e.key === "-" ||
+                                      e.key === "e" ||
+                                      e.key === "+"
+                                    ) {
+                                      e.preventDefault();
+                                    }
+                                  }}
+                                  onWheel={(e) => e.target.blur()}
+                                />
+                                <ErrorMessage
+                                  name={`legalHeirs.${index}.faldaarBhumi`}
+                                  component="div"
+                                  className="text-red-500 text-xs"
+                                />
+                              </div>
+
+                              <div>
+                                <label
+                                  htmlFor={`legalHeirs.${index}.gairFaldaarBhumi`}
+                                  className="block text-xs font-medium text-gray-700"
+                                >
+                                  Gairfaldaar Bhumi Share %age
+                                </label>
+                                <Field
+                                  name={`legalHeirs.${index}.gairFaldaarBhumi`}
+                                  type="number"
+                                  className="custom-input px-3 py-2 text-sm appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                  placeholder="Enter percentage"
+                                  onChange={(e) => {
+                                    setFieldValue(
+                                      `legalHeirs.${index}.gairFaldaarBhumi`,
+                                      e.target.value &&
+                                        parseFloat(
+                                          Number(e.target.value).toFixed(2)
+                                        )
+                                    );
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (
+                                      e.key === "-" ||
+                                      e.key === "e" ||
+                                      e.key === "+"
+                                    ) {
+                                      e.preventDefault();
+                                    }
+                                  }}
+                                  onWheel={(e) => e.target.blur()}
+                                />
+                                <ErrorMessage
+                                  name={`legalHeirs.${index}.gairFaldaarBhumi`}
+                                  component="div"
+                                  className="text-red-500 text-xs"
+                                />
+                              </div>
+
+                              <div>
+                                <label
+                                  htmlFor={`legalHeirs.${index}.makaanShare`}
+                                  className="block text-xs font-medium text-gray-700"
+                                >
+                                  Makaan Share %age
+                                </label>
+                                <Field
+                                  name={`legalHeirs.${index}.makaanShare`}
+                                  type="number"
+                                  className="custom-input px-3 py-2 text-sm appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                  placeholder="Enter percentage"
+                                  onChange={(e) => {
+                                    setFieldValue(
+                                      `legalHeirs.${index}.makaanShare`,
+                                      e.target.value &&
+                                        parseFloat(
+                                          Number(e.target.value).toFixed(2)
+                                        )
+                                    );
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (
+                                      e.key === "-" ||
+                                      e.key === "e" ||
+                                      e.key === "+"
+                                    ) {
+                                      e.preventDefault();
+                                    }
+                                  }}
+                                  onWheel={(e) => e.target.blur()}
+                                />
+                                <ErrorMessage
+                                  name={`legalHeirs.${index}.makaanShare`}
+                                  component="div"
+                                  className="text-red-500 text-xs"
+                                />
+                              </div>
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -201,21 +393,46 @@ const LegalHeirModal = ({
                       {/* Add New Beneficiary Button */}
                       <button
                         type="button"
-                        className="bg-green-500 text-white text-sm px-4 py-1 rounded-lg hover:bg-green-600"
+                        className="bg-green-500 text-white text-sm px-4 py-1 rounded-lg hover:bg-green-600 w-full"
                         onClick={() => {
-                          const total = values.beneficiaries.reduce(
+                          const totalBhumi = values.legalHeirs.reduce(
                             (acc, beneficiary) =>
-                              acc +
-                              parseFloat(beneficiary.percentage.toFixed(2)),
+                              acc + (parseFloat(beneficiary.bhumi) || 0),
+                            0
+                          );
+                          const totalFaldaarBhumi = values.legalHeirs.reduce(
+                            (acc, beneficiary) =>
+                              acc + (parseFloat(beneficiary.faldaarBhumi) || 0),
+                            0
+                          );
+                          const totalGairfaldaarBhumi =
+                            values.legalHeirs.reduce(
+                              (acc, beneficiary) =>
+                                acc +
+                                (parseFloat(beneficiary.gairFaldaarBhumi) || 0),
+                              0
+                            );
+                          const totalMakaanShare = values.legalHeirs.reduce(
+                            (acc, beneficiary) =>
+                              acc + (parseFloat(beneficiary.makaanShare) || 0),
                             0
                           );
                           push({
                             name: "",
-                            percentage: parseFloat((100 - total).toFixed(2)),
+                            bhumi: parseFloat((100 - totalBhumi).toFixed(2)),
+                            faldaarBhumi: parseFloat(
+                              (100 - totalFaldaarBhumi).toFixed(2)
+                            ),
+                            gairFaldaarBhumi: parseFloat(
+                              (100 - totalGairfaldaarBhumi).toFixed(2)
+                            ),
+                            makaanShare: parseFloat(
+                              (100 - totalMakaanShare).toFixed(2)
+                            ),
                           });
                         }}
                       >
-                        {CONSTANTS.BUTTON.ADD_BENEFECIARY}
+                        Add Legal Heir
                       </button>
                     </>
                   )}
@@ -223,9 +440,9 @@ const LegalHeirModal = ({
               </div>
 
               {/* Cancel and Save Buttons */}
-              <div className="flex justify-between mt-4 gap-5">
+              <div className="flex justify-between mt-6 gap-4">
                 <button
-                  className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 w-full"
+                  className="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 w-full"
                   onClick={() => closeModal()}
                 >
                   Cancel
