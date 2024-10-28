@@ -62,13 +62,13 @@ const BeneficiariesListPage = () => {
   };
 
   // To handle add details button
-  const handleAddDetails = () => {
-    const khatauni = selectedKhatauni.join("-");
-    // villageName to be changed to villageId
-    navigate(`/add-disbursement/${villageName}/${khatauni}`, {
-      state: { disbursementFilter: disbursementFilter },
-    });
-  };
+  // const handleAddDetails = () => {
+  //   const khatauni = selectedKhatauni.join("-");
+  //   // villageName to be changed to villageId
+  //   navigate(`/add-disbursement/${villageName}/${khatauni}`, {
+  //     state: { disbursementFilter: disbursementFilter },
+  //   });
+  // };
 
   // To handle add details button
   const setDisbursementStatus = (status) => {
@@ -157,10 +157,10 @@ const BeneficiariesListPage = () => {
           </div>
         </>
       )}
-      <div className="overflow-auto border rounded-lg shadow-lg">
+      <div className="overflow-auto border rounded-lg shadow-lg custom-scrollbar">
         {/* Table Header */}
         <table className="min-w-full text-left table-auto">
-          <thead className="bg-gray-200 text-sm">
+          <thead className="bg-gray-200 text-xs">
             <tr>
               {userRole === "0" && (
                 <th className="px-3 py-2 font-medium text-center">
@@ -184,61 +184,63 @@ const BeneficiariesListPage = () => {
           </thead>
           {beneficiaryList?.length > 0 ? (
             <tbody className="text-sm">
-              <tr>
-                <td
-                  colSpan={userRole === "0" ? "10" : "9"}
-                  className="px-4 py-2 font-semibold"
-                >
-                  <div className="flex justify-between items-center">
-                    <div className="flex gap-2">
-                      <input
-                        type="checkbox"
-                        id="all"
-                        checked={allCheckbox}
-                        className="form-checkbox"
-                        onChange={(event) => {
-                          handleAllKhatauniCheck(event.target);
-                        }}
-                      />
-                      <label htmlFor="all" className="cursor-pointer">
-                        {CONSTANTS.BUTTON.SELECT_ALL}
-                      </label>
-                    </div>
-                    <div className="flex justify-end space-x-4">
-                      {userRole !== "0" && (
-                        <button
-                          disabled={!selectedKhatauni.length}
-                          className={`text-white px-4 py-1 rounded-md text-sm ${
-                            selectedKhatauni.length
-                              ? "bg-blue-500 hover:bg-blue-600"
-                              : "bg-gray-300 cursor-not-allowed"
-                          }`}
-                        >
-                          {CONSTANTS.BUTTON.DOWNLOAD_INVOICE}
-                        </button>
-                      )}
-                      {userRole === "0" && (
-                        <button
-                          disabled={!selectedKhatauni.length}
-                          onClick={() => {
-                            handleAddDetails();
+              {userRole !== "0" && (
+                <tr>
+                  <td
+                    colSpan={userRole === "0" ? "10" : "9"}
+                    className="px-4 py-2 font-semibold"
+                  >
+                    <div className="flex justify-between items-center">
+                      <div className="flex gap-2">
+                        <input
+                          type="checkbox"
+                          id="all"
+                          checked={allCheckbox}
+                          className="form-checkbox"
+                          onChange={(event) => {
+                            handleAllKhatauniCheck(event.target);
                           }}
-                          className={`text-white px-4 py-1 rounded-md text-sm ${
-                            selectedKhatauni.length
-                              ? "bg-blue-500 hover:bg-blue-600"
-                              : "bg-gray-300 cursor-not-allowed"
-                          }`}
-                        >
-                          <div className="flex gap-1 items-center justify-center">
-                            <MdOutlineLibraryAdd size={16} />
-                            {CONSTANTS.BUTTON.ADD_DISBURSEMENT_DETAILS}
-                          </div>
-                        </button>
-                      )}
+                        />
+                        <label htmlFor="all" className="cursor-pointer">
+                          {CONSTANTS.BUTTON.SELECT_ALL}
+                        </label>
+                      </div>
+                      <div className="flex justify-end space-x-4">
+                        {userRole !== "0" && (
+                          <button
+                            disabled={!selectedKhatauni.length}
+                            className={`text-white px-4 py-1 rounded-md text-sm ${
+                              selectedKhatauni.length
+                                ? "bg-blue-500 hover:bg-blue-600"
+                                : "bg-gray-300 cursor-not-allowed"
+                            }`}
+                          >
+                            {CONSTANTS.BUTTON.DOWNLOAD_INVOICE}
+                          </button>
+                        )}
+                        {/* {userRole === "0" && (
+                          <button
+                            disabled={!selectedKhatauni.length}
+                            onClick={() => {
+                              handleAddDetails();
+                            }}
+                            className={`text-white px-4 py-1 rounded-md text-sm ${
+                              selectedKhatauni.length
+                                ? "bg-blue-500 hover:bg-blue-600"
+                                : "bg-gray-300 cursor-not-allowed"
+                            }`}
+                          >
+                            <div className="flex gap-1 items-center justify-center">
+                              <MdOutlineLibraryAdd size={16} />
+                              {CONSTANTS.BUTTON.ADD_DISBURSEMENT_DETAILS}
+                            </div>
+                          </button>
+                        )} */}
+                      </div>
                     </div>
-                  </div>
-                </td>
-              </tr>
+                  </td>
+                </tr>
+              )}
               {/* Iterate over each (Khatauni) group */}
               {paginatedData?.map((khatauniSankhya) => (
                 <React.Fragment key={khatauniSankhya}>
@@ -250,7 +252,7 @@ const BeneficiariesListPage = () => {
                     >
                       <div className="flex justify-between items-center">
                         <div className="flex gap-2">
-                          <input
+                          {/* <input
                             value={khatauniSankhya}
                             id={khatauniSankhya}
                             checked={selectedKhatauni.includes(khatauniSankhya)}
@@ -259,10 +261,10 @@ const BeneficiariesListPage = () => {
                             onChange={(event) => {
                               handleKhatauniCheck(event.target);
                             }}
-                          />
+                          /> */}
                           <label
-                            htmlFor={khatauniSankhya}
-                            className="cursor-pointer"
+                          // htmlFor={khatauniSankhya}
+                          // className="cursor-pointer"
                           >
                             {CONSTANTS.KHATAUNI_SANKHYA}: {khatauniSankhya}
                           </label>
@@ -280,7 +282,7 @@ const BeneficiariesListPage = () => {
                           </Link>
                           {userRole === "0" && (
                             <Link
-                              to={`/add-disbursement/${villageName}/${khatauniSankhya}`}
+                              to={`/add-disbursement/${villageName}/${khatauniSankhya}/${villageId}`}
                               state={{ disbursementFilter: disbursementFilter }}
                               className="text-blue-600 group"
                             >
@@ -300,30 +302,56 @@ const BeneficiariesListPage = () => {
                     <tr key={item.beneficiaryId}>
                       {userRole === "0" && (
                         <td className="px-3 py-2 text-center">
-                          {setDisbursementStatus(item.isDisbursementUploaded)}
+                          <div className="max-h-28 overflow-y-auto whitespace-normal custom-scrollbar">
+                            {setDisbursementStatus(item.isDisbursementUploaded)}
+                          </div>
                         </td>
                       )}
                       <td className="px-3 py-2 text-center">
-                        {item.serialNumber}
-                      </td>
-                      <td className="px-3 py-2">{item.beneficiaryName}</td>
-                      <td className="px-3 py-2">
-                        {SeprateString(item.khasraNumber)}
+                        <div className="max-h-28 overflow-y-auto whitespace-normal custom-scrollbar">
+                          {item.serialNumber}
+                        </div>
                       </td>
                       <td className="px-3 py-2">
-                        {SeprateString(item.areaVariety)}
+                        <div className="max-h-28 min-w-20 overflow-y-auto whitespace-normal custom-scrollbar">
+                          {item.beneficiaryName}
+                        </div>
                       </td>
                       <td className="px-3 py-2">
-                        {SeprateString(item.acquiredKhasraNumber)}
+                        <div className="max-h-28 min-w-16 overflow-y-auto whitespace-normal custom-scrollbar">
+                          {SeprateString(item.khasraNumber)}
+                        </div>
                       </td>
                       <td className="px-3 py-2">
-                        {SeprateString(item.acquiredRakbha)}
+                        <div className="max-h-28 w-20 overflow-y-auto whitespace-normal custom-scrollbar">
+                          {SeprateString(item.areaVariety)}
+                        </div>
                       </td>
-                      <td className="px-3 py-2">{item.beneficiaryShare}</td>
                       <td className="px-3 py-2">
-                        {item.acquiredBeneficiaryShare}
+                        <div className="max-h-28 w-24 overflow-y-auto whitespace-normal custom-scrollbar">
+                          {SeprateString(item.acquiredKhasraNumber)}
+                        </div>
                       </td>
-                      <td className="px-3 py-2">{item.landPricePerSqMt}</td>
+                      <td className="px-3 py-2">
+                        <div className="max-h-28 w-20 overflow-y-auto whitespace-normal custom-scrollbar">
+                          {SeprateString(item.acquiredRakbha)}
+                        </div>
+                      </td>
+                      <td className="px-3 py-2">
+                        <div className="max-h-28 w-16 overflow-y-auto whitespace-normal custom-scrollbar">
+                          {item.beneficiaryShare}
+                        </div>
+                      </td>
+                      <td className="px-3 py-2">
+                        <div className="max-h-28 w-16 overflow-y-auto whitespace-normal custom-scrollbar">
+                          {item.acquiredBeneficiaryShare}
+                        </div>
+                      </td>
+                      <td className="px-3 py-2">
+                        <div className="max-h-28 overflow-y-auto whitespace-normal custom-scrollbar">
+                          {item.landPricePerSqMt}
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </React.Fragment>
@@ -343,7 +371,6 @@ const BeneficiariesListPage = () => {
           )}
         </table>
       </div>
-
       {/* Pagination */}
       <Pagination
         data={groupedBeneficiaries}

@@ -48,6 +48,21 @@ export const getVillageBeneficiariesList = (villageId) => async (dispatch) => {
   }
 };
 
+// API to fetch khatauni details and beneficiaries list with respect to village
+export const getKhatauniDetails = (payload) => async (dispatch) => {
+  dispatch(startLoading());
+  try {
+    const response = await apiClient.get(`/khatauni-details`, {
+      params: payload,
+    });
+    dispatch(stopLoading());
+    return response.data;
+  } catch (error) {
+    dispatch(stopLoading());
+    return handleApiError(error);
+  }
+};
+
 // API to fetch beneficiaries details list with respect to village and selected khatauni
 export const getBeneficiariesDetails =
   (villageId, khatauniSankhya, id, userRole, ids, disbursementFilter) =>

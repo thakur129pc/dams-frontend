@@ -89,6 +89,7 @@
     "APPROVE": "Approve",
     "REJECT": "Reject",
     "REVOK": "Revok Rejection",
+    "REVERT_BACK": "Revert Back",
     "EXPORT_REPORT": "Export MIS Report",
     "CLEAR_FILTERS": "Clear all filters",
     "VIEW_LEGAL_HEIR": "View Legal Heirs",

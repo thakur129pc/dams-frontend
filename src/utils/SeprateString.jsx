@@ -12,5 +12,7 @@ export const SeprateString = (string) => {
 
 // Function to customize the string of rakhba khasra etc and add , in between.
 export const CustomizeString = (string) => {
-  return string.replace(/\s+/g, " ").split(" ").join(", ");
+  if (string) {
+    return string.replace(/\s+/g, " ").split(" ").join(", ");
+  }
 };

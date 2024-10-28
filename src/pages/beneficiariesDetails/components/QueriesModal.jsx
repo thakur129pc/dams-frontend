@@ -33,7 +33,7 @@ const QueriesModal = ({
     } else if (userRole === "3") {
       return "DC Administration";
     } else {
-      return "Inputer";
+      return "Inputter";
     }
   };
 
@@ -220,6 +220,28 @@ const QueriesModal = ({
                   <div className="border border-orange-400 flex-1"></div>
                 </div>
               </div>
+            ) : msg.message.includes("---@revert@---") ? (
+              <div key={index} className="flex flex-col mb-4">
+                <div className="my-2 text-xs font-semibold text-gray-500 flex justify-center items-center">
+                  <div className="border border-orange-400 flex-1"></div>
+                  <div className="p-2 text-orange-400">Reverted</div>
+                  <div className="border border-orange-400 flex-1"></div>
+                </div>
+                <div className="w-2/3 self-center p-4 bg-orange-300 rounded-lg shadow text-left">
+                  <p className="text-gray-700">
+                    <span className="font-medium text-gray-600">Reason: </span>
+                    {msg.message.split("---@revert@---")[1]}
+                  </p>
+                  <small className="block mt-2 text-gray-500">
+                    By {msg.userId === userId ? "You" : msg.userName} -{" "}
+                    {setRole(msg.userRole)} on{" "}
+                    {moment(msg.updatedAt).format("DD MMM YYYY - hh:mmA")}
+                  </small>
+                </div>
+                <div className="my-5 text-xs font-semibold text-gray-500 flex justify-center items-center">
+                  <div className="border border-orange-400 flex-1"></div>
+                </div>
+              </div>
             ) : (
               <div
                 key={index}
@@ -230,8 +252,8 @@ const QueriesModal = ({
                 <div
                   className={`max-w-xs p-4 rounded-lg shadow ${
                     msg.userId === userId
-                      ? "bg-green-100 text-right"
-                      : "bg-yellow-100 text-left"
+                      ? "bg-orange-100 text-right"
+                      : "bg-orange-100 text-left"
                   }`}
                 >
                   <p>{msg.message}</p>

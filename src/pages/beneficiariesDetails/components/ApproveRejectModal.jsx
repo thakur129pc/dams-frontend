@@ -6,6 +6,7 @@ import {
 } from "react-icons/fa";
 import { RiMoneyRupeeCircleFill } from "react-icons/ri";
 import CONSTANTS from "../../../constants.json";
+import { GrRevert } from "react-icons/gr";
 
 export default function ApproveRejectModal({
   type,
@@ -16,6 +17,7 @@ export default function ApproveRejectModal({
 }) {
   const [rejectionMessage, setRejectionMessage] = useState("");
   const [revokedMessage, setRevokedMessage] = useState("");
+  const [revertMessage, setRevertMessage] = useState("");
   const [messageError, setMessageError] = useState(false);
 
   const getModalContent = () => {
@@ -39,6 +41,14 @@ export default function ApproveRejectModal({
           icon: <FaArrowCircleUp className="text-blue-500 text-5xl" />,
           isRemarkRequired: true,
           isRevok: true,
+        };
+      case "revert":
+        return {
+          message:
+            "Are you sure you want to revert the case? The beneficiary will be sent back to the inputter and the whole process will start again.",
+          icon: <GrRevert className="text-orange-500 text-5xl" />,
+          isRemarkRequired: true,
+          isRevert: true,
         };
       case "dc-approve":
         return {
@@ -66,10 +76,18 @@ export default function ApproveRejectModal({
             <textarea
               placeholder="Write remark*"
               className="border border-gray-300 rounded w-full p-2 outline-blue-600"
-              value={modalContent.isRevok ? revokedMessage : rejectionMessage}
+              value={
+                modalContent.isRevok
+                  ? revokedMessage
+                  : modalContent.isRevert
+                  ? revertMessage
+                  : rejectionMessage
+              }
               onChange={(e) => {
                 if (modalContent.isRevok) {
                   setRevokedMessage(e.target.value.replace(/\s+/g, " "));
+                } else if (modalContent.isRevert) {
+                  setRevertMessage(e.target.value.replace(/\s+/g, " "));
                 } else {
                   setRejectionMessage(e.target.value.replace(/\s+/g, " "));
                 }
@@ -100,11 +118,16 @@ export default function ApproveRejectModal({
                 setMessageError(true);
                 return;
               }
+              if (verifyStatus === "3" && !revertMessage) {
+                setMessageError(true);
+                return;
+              }
               handleVerifyAPI(
                 beneficiaryId,
                 verifyStatus,
                 rejectionMessage,
-                revokedMessage
+                revokedMessage,
+                revertMessage
               );
               closeModal();
             }}

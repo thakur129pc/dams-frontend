@@ -1,58 +1,61 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { formatNumberWithCommas } from "../../utils/priceFormat";
-import { uploadDisbursementDetails } from "../../redux/apis/beneficiariesAPI";
-import { filterByKhatauni } from "../../utils/filterGroupSearch";
+import {
+  getKhatauniDetails,
+  uploadDisbursementDetails,
+} from "../../redux/apis/beneficiariesAPI";
 import toast from "react-hot-toast";
 import BackButton from "../../components/BackButton";
 import CONSTANTS from "../../constants.json";
+import { CustomizeString } from "../../utils/SeprateString";
 
 const AddDisbursementPage = () => {
-  const [filteredBeneficiariesList, setFilteredBeneficiariesList] = useState(
-    []
-  );
   const [initialValues, setInitialValues] = useState({
     beneficiaries: [],
   });
   const [isChecked, setIsChecked] = useState(false);
   const [checkError, setCheckError] = useState(false);
+  const [makaanDebounceTimeout, setMakaanDebounceTimeout] = useState();
   const [interestDays, setInterestDays] = useState();
+  const [toastId, setToastId] = useState(null);
+  const [beneficiaryList, setBeneficiaryList] = useState({});
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const location = useLocation();
-  const { disbursementFilter } = location.state || "";
-  const { villageName, khatauni } = useParams();
-  const [list, setList] = useState([]);
-  const beneficiaryList = useSelector(
-    (state) => state.beneficiariesListSlice.villageBeneficiaries
-  );
+  const { villageName, khatauni, villageId } = useParams();
 
   const validationSchema = Yup.object().shape({
+    bhumiCompensation: Yup.number()
+      .min(0, "Invalid value")
+      .test("is-decimal", "Invalid value", (value) =>
+        /^\d+(\.\d{1,2})?$/.test(value)
+      )
+      .required("*required field"),
+    faldaarBhumiCompensation: Yup.number()
+      .min(0, "Invalid value")
+      .test("is-decimal", "Invalid value", (value) =>
+        /^\d+(\.\d{1,2})?$/.test(value)
+      )
+      .required("*required field"),
+    gairFaldaarBhumiCompensation: Yup.number()
+      .min(0, "Invalid value")
+      .test("is-decimal", "Invalid value", (value) =>
+        /^\d+(\.\d{1,2})?$/.test(value)
+      )
+      .required("*required field"),
     beneficiaries: Yup.array().of(
       Yup.object().shape({
-        faldaarBhumiPrice: Yup.number()
-          .min(0, "Invalid value")
-          .test("is-decimal", "Invalid value", (value) =>
-            /^\d+(\.\d{1,2})?$/.test(value)
-          )
-          .required("*required field"),
-        gairFaldaarBhumiPrice: Yup.number()
-          .min(0, "Invalid value")
-          .test("is-decimal", "Invalid value", (value) =>
-            /^\d+(\.\d{1,2})?$/.test(value)
-          )
-          .required("*required field"),
         housePrice: Yup.number()
           .min(0, "Invalid value")
           .test("is-decimal", "Invalid value", (value) =>
             /^\d+(\.\d{1,2})?$/.test(value)
           )
           .required("*required field"),
-        vivran: Yup.string().max(150, "Max 150 characters"),
+        vivran: Yup.string().max(500, "Max 500 characters"),
       })
     ),
   });
@@ -64,6 +67,8 @@ const AddDisbursementPage = () => {
     }
     const payload = {
       ...values,
+      khatauniSankhya: khatauni,
+      villageId,
     };
     // Add Disbursement API
     dispatch(uploadDisbursementDetails(payload)).then((res) => {
@@ -78,13 +83,21 @@ const AddDisbursementPage = () => {
 
   useEffect(() => {
     // Set initial values for the form
+    if (!beneficiaryList?.beneficiaries?.length) {
+      return;
+    }
     setInitialValues({
-      beneficiaries: filteredBeneficiariesList?.map((item) => ({
+      bhumiCompensation:
+        beneficiaryList.khatauniDetails.bhumiCompensation || "",
+      gairFaldaarBhumiCompensation:
+        beneficiaryList.khatauniDetails.gairFaldaarBhumiCompensation || "",
+      faldaarBhumiCompensation:
+        beneficiaryList.khatauniDetails.faldaarBhumiCompensation || "",
+      makaanCompensation:
+        beneficiaryList.khatauniDetails.makaanCompensation || "",
+      beneficiaries: beneficiaryList.beneficiaries?.map((item) => ({
         beneficiaryId: item.beneficiaryId || "",
-        landPricePerSqMt: item.landPricePerSqMt || 0,
-        acquiredBeneficiaryShare: item.acquiredBeneficiaryShare || "",
-        interestDays: item.interestDays || 0,
-        bhumiPrice: item.bhumiPrice || 0,
+        beneficiaryShare: item.beneficiaryShare || 1,
         faldaarBhumiPrice: item.faldaarBhumiPrice || 0,
         gairFaldaarBhumiPrice: item.gairFaldaarBhumiPrice || 0,
         housePrice: item.housePrice || 0,
@@ -95,27 +108,26 @@ const AddDisbursementPage = () => {
         isConsent: "1",
       })),
     });
-  }, [filteredBeneficiariesList]);
-
-  useEffect(() => {
-    let data = beneficiaryList;
-    if (disbursementFilter) {
-      data = data.filter(
-        (item) => item.isDisbursementUploaded === disbursementFilter
-      );
-    }
-    setList(data);
-  }, [disbursementFilter, beneficiaryList]);
-
-  useEffect(() => {
-    // Filter beneficiaries on the basis of selected khautani
-    setFilteredBeneficiariesList(
-      filterByKhatauni(list, khatauni.split("-")).sort(
-        (a, b) => a.serialNumber - b.serialNumber
-      )
+    setInterestDays(
+      beneficiaryList.khatauniDetails.villageId.interestDays || 0
     );
-    setInterestDays(list[0]?.interestDays);
-  }, [list]);
+  }, [beneficiaryList]);
+
+  useEffect(() => {
+    // Khatauni details + beneficiaries API
+    dispatch(getKhatauniDetails({ villageId, khatauniSankhya: khatauni })).then(
+      (res) => {
+        if (res.success) {
+          const data = res.beneficiaries.sort(
+            (a, b) => a.serialNumber - b.serialNumber
+          );
+          setBeneficiaryList({ ...res, beneficiaries: data });
+        } else {
+          toast.error(res.message);
+        }
+      }
+    );
+  }, []);
 
   return (
     <div className="p-4">
@@ -176,7 +188,7 @@ const AddDisbursementPage = () => {
         </div>
       </div>
 
-      <div className="overflow-x-scroll custom-scrollbar border rounded-lg shadow-lg">
+      <div className="border rounded-lg shadow-lg">
         {/* Formik Form */}
         <Formik
           initialValues={initialValues}
@@ -185,84 +197,99 @@ const AddDisbursementPage = () => {
           onSubmit={onSubmit}
         >
           {({ values, setFieldValue }) => {
-            const hasRunEffectRef = useRef(false);
             useEffect(() => {
-              if (hasRunEffectRef.current || !values?.beneficiaries.length)
-                return;
-              // Mark the effect as run
-              hasRunEffectRef.current = true;
-              values.beneficiaries.forEach((_, index) => {
-                const bhumiPrice =
-                  parseFloat(values?.beneficiaries[index]?.bhumiPrice) || 0;
-                const faldaarBhumiPrice =
-                  parseFloat(values?.beneficiaries[index]?.faldaarBhumiPrice) ||
-                  0;
-                const gairFaldaarBhumiPrice =
-                  parseFloat(
-                    values?.beneficiaries[index]?.gairFaldaarBhumiPrice
-                  ) || 0;
-                const housePrice =
-                  parseFloat(values?.beneficiaries[index]?.housePrice) || 0;
+              const debounceTimeout = setTimeout(() => {
+                let bhumiCompensation = values.bhumiCompensation;
+                let faldaarBhumiCompensation = values.faldaarBhumiCompensation;
+                let gairFaldaarBhumiCompensation =
+                  values.gairFaldaarBhumiCompensation;
 
-                // Calculate bhumi price
-                let bhumi =
-                  values?.beneficiaries[index].landPricePerSqMt *
-                  parseFloat(
-                    values?.beneficiaries[index].acquiredBeneficiaryShare
-                      .split("-")
-                      .join("")
+                values.beneficiaries.forEach((_, index) => {
+                  const beneficiaryShare =
+                    values?.beneficiaries[index]?.beneficiaryShare;
+                  const housePrice =
+                    parseFloat(values?.beneficiaries[index]?.housePrice) || 0;
+
+                  // Calculate bhumi price
+                  let bhumiPrice = parseFloat(
+                    bhumiCompensation * eval(beneficiaryShare)
+                  ).toFixed(2);
+                  // Set calculated bhumi price
+                  setFieldValue(
+                    `beneficiaries[${index}].bhumiPrice`,
+                    bhumiPrice
                   );
-                // Set calculated bhumi price
-                setFieldValue(
-                  `beneficiaries[${index}].bhumiPrice`,
-                  parseFloat(bhumi.toFixed(2))
-                );
 
-                // Calculate toshan
-                const toshan =
-                  bhumiPrice +
-                  faldaarBhumiPrice +
-                  gairFaldaarBhumiPrice +
-                  housePrice;
-                // Set the calculated toshan value in Formik's state
-                setFieldValue(
-                  `beneficiaries[${index}].toshan`,
-                  parseFloat(toshan.toFixed(2))
-                );
+                  // Calculate faldaar bhumi price
+                  let faldaarBhumiPrice = parseFloat(
+                    faldaarBhumiCompensation * eval(beneficiaryShare)
+                  ).toFixed(2);
+                  // Set calculated bhumi price
+                  setFieldValue(
+                    `beneficiaries[${index}].faldaarBhumiPrice`,
+                    faldaarBhumiPrice
+                  );
 
-                // Calculate interest
-                const timeInYears =
-                  values?.beneficiaries[index]?.interestDays / 365;
-                const interest = (toshan * 12 * timeInYears) / 100;
-                // Set calculated interest
-                setFieldValue(
-                  `beneficiaries[${index}].interest`,
-                  parseFloat(interest.toFixed(2))
-                );
+                  // Calculate faldaar bhumi price
+                  let gairFaldaarBhumiPrice = parseFloat(
+                    gairFaldaarBhumiCompensation * eval(beneficiaryShare)
+                  ).toFixed(2);
+                  // Set calculated bhumi price
+                  setFieldValue(
+                    `beneficiaries[${index}].gairFaldaarBhumiPrice`,
+                    gairFaldaarBhumiPrice
+                  );
 
-                // Calculate total compensation
-                const total = 2 * toshan + interest;
-                // Set calculated interest
-                setFieldValue(
-                  `beneficiaries[${index}].totalCompensation`,
-                  parseFloat(total.toFixed(2))
-                );
+                  // Calculate toshan
+                  const toshan =
+                    +bhumiPrice +
+                    +faldaarBhumiPrice +
+                    +gairFaldaarBhumiPrice +
+                    +housePrice;
+                  // Set the calculated toshan value in Formik's state
+                  setFieldValue(
+                    `beneficiaries[${index}].toshan`,
+                    toshan.toFixed(2)
+                  );
 
-                // Set vivran
-                setFieldValue(
-                  `beneficiaries[${index}].vivran`,
-                  values?.beneficiaries[index].vivran.replace(/\s+/g, " ")
-                );
-              });
-            }, [values.beneficiaries]);
+                  // Calculate interest
+                  const timeInYears = interestDays / 365;
+                  const interest = (toshan * 12 * timeInYears) / 100;
+                  // Set calculated interest
+                  setFieldValue(
+                    `beneficiaries[${index}].interest`,
+                    parseFloat(interest.toFixed(2))
+                  );
+
+                  // Calculate total compensation
+                  const total = 2 * toshan + interest;
+                  // Set calculated interest
+                  setFieldValue(
+                    `beneficiaries[${index}].totalCompensation`,
+                    parseFloat(total.toFixed(2))
+                  );
+
+                  // Set vivran
+                  setFieldValue(
+                    `beneficiaries[${index}].vivran`,
+                    values?.beneficiaries[index]?.vivran?.replace(/\s+/g, " ")
+                  );
+                });
+              }, 500);
+              return () => clearTimeout(debounceTimeout);
+            }, [
+              values.bhumiCompensation,
+              values.faldaarBhumiCompensation,
+              values.gairFaldaarBhumiCompensation,
+            ]);
 
             const handleFieldChange = (index, field, value) => {
               // Update the specific field's value
               setFieldValue(
                 `beneficiaries[${index}].${field}`,
                 field === "vivran"
-                  ? value.replace(/\s+/g, " ")
-                  : parseFloat(value)
+                  ? value?.replace(/\s+/g, " ")
+                  : parseFloat(value) || 0
               );
 
               // Perform the calculations based on the new values
@@ -270,7 +297,7 @@ const AddDisbursementPage = () => {
                 ...values.beneficiaries[index],
                 [field]:
                   field === "vivran"
-                    ? value.replace(/\s+/g, " ")
+                    ? value?.replace(/\s+/g, " ")
                     : parseFloat(value),
               };
 
@@ -281,19 +308,6 @@ const AddDisbursementPage = () => {
               const gairFaldaarBhumiPrice =
                 parseFloat(updatedValues?.gairFaldaarBhumiPrice) || 0;
               const housePrice = parseFloat(updatedValues?.housePrice) || 0;
-
-              // Calculate bhumi price based on the updated field
-              let bhumi =
-                updatedValues?.landPricePerSqMt *
-                parseFloat(
-                  updatedValues?.acquiredBeneficiaryShare.split("-").join("")
-                );
-
-              // Set calculated bhumi price
-              setFieldValue(
-                `beneficiaries[${index}].bhumiPrice`,
-                parseFloat(bhumi.toFixed(2))
-              );
 
               // Calculate toshan
               const toshan =
@@ -307,7 +321,7 @@ const AddDisbursementPage = () => {
               );
 
               // Calculate interest
-              const timeInYears = updatedValues?.interestDays / 365;
+              const timeInYears = interestDays / 365;
               const interest = (toshan * 12 * timeInYears) / 100;
               setFieldValue(
                 `beneficiaries[${index}].interest`,
@@ -320,267 +334,356 @@ const AddDisbursementPage = () => {
                 `beneficiaries[${index}].totalCompensation`,
                 parseFloat(total.toFixed(2))
               );
+
+              if (makaanDebounceTimeout) {
+                clearTimeout(makaanDebounceTimeout);
+              }
+              let debounceTimeout = setTimeout(() => {
+                // Calculate makaan compensation
+                if (field === "housePrice") {
+                  let makaanCompensation = +parseFloat(value).toFixed(2) || 0;
+                  values.beneficiaries.forEach((beneficiary, i) => {
+                    if (i === index) {
+                      return;
+                    }
+                    makaanCompensation += +beneficiary.housePrice;
+                  });
+                  setFieldValue(`makaanCompensation`, makaanCompensation);
+                }
+              }, 500);
+              setMakaanDebounceTimeout(debounceTimeout);
             };
 
             return (
               <Form id="beneficiaryForm">
-                <table className="text-left">
-                  <thead className="bg-gray-200 text-sm">
-                    <tr>
-                      <th className="px-2 py-3 text-center">
+                <div className="bg-white rounded-lg p-6 m-2 shadow-lg border border-gray-100 text-sm">
+                  <div className="flex justify-between text-gray-700">
+                    <div className="flex flex-col gap-2">
+                      <div className="font-semibold">
                         {CONSTANTS.KHATAUNI_SANKHYA}
-                      </th>
-                      <th className="px-2 py-3 text-center">
-                        {CONSTANTS.SERIAL_NUMBER}
-                      </th>
-                      <th className="px-2 py-3">
-                        {CONSTANTS.BENEFICIARY_NAME}
-                      </th>
-                      <th className="px-2 py-3">
-                        {CONSTANTS.ACQUIRED_BENEFICIARY_SHARE} (SqMt)
-                      </th>
-                      <th className="px-2 py-3">
+                      </div>
+                      <div className="text-gray-600">
+                        {beneficiaryList?.khatauniDetails?.khatauniSankhya}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <div className="font-semibold">
                         {CONSTANTS.LAND_PRICE_PER_SQ_MT}
-                      </th>
-                      <th className="px-2 py-3">{CONSTANTS.BHUMI_PRICE}</th>
-                      <th className="px-2 py-3">
-                        {CONSTANTS.FALDAAR_BHUMI_PRICE}
-                      </th>
-                      <th className="px-2 py-3">
-                        {CONSTANTS.GAIR_FALDAAR_BHUMI_PRICE}
-                      </th>
-                      <th className="px-2 py-3">{CONSTANTS.HOUSE_PRICE}</th>
-                      <th className="px-2 py-3">{CONSTANTS.TOSHAN}</th>
-                      <th className="px-2 py-3">
-                        {CONSTANTS.INTEREST} ({interestDays} days)
-                      </th>
-                      <th className="px-2 py-3">
-                        {CONSTANTS.TOTAL_COMPENSATION}
-                      </th>
-                      <th className="px-2 py-3">{CONSTANTS.VIVRAN}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-xs">
-                    {filteredBeneficiariesList?.map((beneficiary, index) => {
-                      return (
-                        <tr key={index}>
-                          {/* Khatauni Sankhya */}
-                          <td className="px-2 py-3 text-center">
-                            {beneficiary.khatauniSankhya}
-                          </td>
-                          {/* Serial Number */}
-                          <td className="px-2 py-3 text-center">
-                            {beneficiary.serialNumber}
-                          </td>
-                          {/* Beneficiary Name */}
-                          <td className="px-2 py-3 min-w-[150px]">
-                            {beneficiary.beneficiaryName}
-                          </td>
-                          {/* Acquired Beneficiary Share */}
-                          <td className="px-2 py-3">
-                            <div>
-                              {parseFloat(
-                                values?.beneficiaries[
-                                  index
-                                ]?.acquiredBeneficiaryShare
-                                  .split("-")
-                                  .join("")
-                              )}
-                            </div>
-                          </td>
-                          {/* Price Per Sq Mt */}
-                          <td className="px-2 py-3">
-                            <div className="flex gap-1 items-center">
-                              <span className="font-semibold">₹</span>
-                              <Field
-                                name={`beneficiaries[${index}].landPricePerSqMt`}
-                                className="border rounded px-2 py-1 w-16"
-                                value={
-                                  values?.beneficiaries[index]
-                                    ?.landPricePerSqMt || 0
-                                }
-                                readOnly
-                              />
-                            </div>
-                          </td>
-                          {/* Bhumi Price */}
-                          <td className="px-2 py-3">
-                            <div className="border rounded px-2 py-1 w-auto flex gap-1">
-                              <span className="font-semibold">₹</span>
-                              {formatNumberWithCommas(
-                                values?.beneficiaries[index]?.bhumiPrice
-                              )}
-                            </div>
-                          </td>
-                          {/* Faldaar bhumi */}
-                          <td className="px-2 py-3">
-                            <div className="flex gap-1 items-center relative">
-                              <span className="font-semibold">₹</span>
-                              <Field
-                                name={`beneficiaries[${index}].faldaarBhumiPrice`}
-                                type="number"
-                                className="custom-input border w-24 rounded px-2 py-1 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                placeholder="*फलदार"
-                                value={
-                                  values?.beneficiaries[index]
-                                    ?.faldaarBhumiPrice || 0
-                                }
-                                onChange={(e) =>
-                                  handleFieldChange(
-                                    index,
-                                    "faldaarBhumiPrice",
-                                    e.target.value
-                                  )
-                                }
-                                onKeyDown={(e) => {
-                                  if (
-                                    e.key === "-" ||
-                                    e.key === "e" ||
-                                    e.key === "+"
-                                  ) {
-                                    e.preventDefault();
-                                  }
-                                }}
-                              />
-                              <ErrorMessage
-                                name={`beneficiaries[${index}].faldaarBhumiPrice`}
-                                component="div"
-                                className="text-red-500 text-xs absolute top-8 left-3"
-                              />
-                            </div>
-                          </td>
-                          {/* Gair faldaar bhumi */}
-                          <td className="px-2 py-3">
-                            <div className="flex gap-1 items-center relative">
-                              <span className="font-semibold">₹</span>
-                              <Field
-                                name={`beneficiaries[${index}].gairFaldaarBhumiPrice`}
-                                type="number"
-                                className="custom-input border rounded px-2 py-1 w-24 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                placeholder="*गैर फलदार"
-                                value={
-                                  values?.beneficiaries[index]
-                                    ?.gairFaldaarBhumiPrice || 0
-                                }
-                                onChange={(e) =>
-                                  handleFieldChange(
-                                    index,
-                                    "gairFaldaarBhumiPrice",
-                                    e.target.value
-                                  )
-                                }
-                                onKeyDown={(e) => {
-                                  if (
-                                    e.key === "-" ||
-                                    e.key === "e" ||
-                                    e.key === "+"
-                                  ) {
-                                    e.preventDefault();
-                                  }
-                                }}
-                              />
-                              <ErrorMessage
-                                name={`beneficiaries[${index}].gairFaldaarBhumiPrice`}
-                                component="div"
-                                className="text-red-500 text-xs absolute top-8 left-3"
-                              />
-                            </div>
-                          </td>
-                          {/* House */}
-                          <td className="px-2 py-3">
-                            <div className="flex gap-1 items-center relative">
-                              <span className="font-semibold">₹</span>
-                              <Field
-                                name={`beneficiaries[${index}].housePrice`}
-                                type="number"
-                                className="custom-input border rounded px-2 py-1 w-24 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                placeholder="*मकान"
-                                value={
-                                  values?.beneficiaries[index]?.housePrice || 0
-                                }
-                                onChange={(e) =>
-                                  handleFieldChange(
-                                    index,
-                                    "housePrice",
-                                    e.target.value
-                                  )
-                                }
-                                onKeyDown={(e) => {
-                                  if (
-                                    e.key === "-" ||
-                                    e.key === "e" ||
-                                    e.key === "+"
-                                  ) {
-                                    e.preventDefault();
-                                  }
-                                }}
-                              />
-                              <ErrorMessage
-                                name={`beneficiaries[${index}].housePrice`}
-                                component="div"
-                                className="text-red-500 text-xs absolute top-8 left-3"
-                              />
-                            </div>
-                          </td>
-                          {/* Automatically calculated Toshan */}
-                          <td className="px-2 py-3">
-                            <div className="border rounded px-2 py-1 w-auto flex gap-1">
-                              <span className="font-semibold">₹</span>
-                              {formatNumberWithCommas(
-                                values?.beneficiaries[index]?.toshan
-                              )}
-                            </div>
-                          </td>
-                          {/* Interest */}
-                          <td className="px-2 py-3">
-                            <div className="border rounded px-2 py-1 w-auto flex gap-1">
-                              <span className="font-semibold">₹</span>
-                              {formatNumberWithCommas(
-                                values?.beneficiaries[index]?.interest
-                              )}
-                            </div>
-                          </td>
-                          {/* Total Compensation */}
-                          <td className="px-2 py-3">
-                            <div className="flex gap-1 font-semibold items-center">
-                              <span>₹</span>
-                              {formatNumberWithCommas(
-                                values?.beneficiaries[index]?.totalCompensation
-                              )}
-                            </div>
-                          </td>
-                          {/* Vivran */}
-                          <td className="px-2 py-3">
-                            <div className="relative">
-                              <Field
-                                name={`beneficiaries[${index}].vivran`}
-                                as="textarea"
-                                rows="1"
-                                className="custom-input border rounded px-2 py-2 w-28 hide-scrollbar min-h-[32px] max-h-[100px]"
-                                placeholder="--"
-                                value={
-                                  values?.beneficiaries[index]?.vivran || ""
-                                }
-                                onChange={(e) =>
-                                  handleFieldChange(
-                                    index,
-                                    "vivran",
-                                    e.target.value
-                                  )
-                                }
-                              />
-                              <ErrorMessage
-                                name={`beneficiaries[${index}].vivran`}
-                                component="div"
-                                className="text-red-500 text-xs absolute bottom-[-12.5px]"
-                              />
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                      </div>
+                      <div className="text-gray-600">
+                        <span className="font-semibold">₹ </span>
+                        {
+                          beneficiaryList?.khatauniDetails?.landPriceId
+                            ?.landPricePerSqMtr
+                        }
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <div className="font-semibold">
+                        कुल अधिग्रिहत भूमि (SqMt)
+                      </div>
+                      <div className="text-gray-600">
+                        {CustomizeString(
+                          beneficiaryList?.khatauniDetails?.totalAcquiredBhumi
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <div className="font-semibold">
+                        कुल मुआवजा - मकान इत्यादि
+                      </div>
+                      <div className="flex gap-1 items-center relative">
+                        <div className="border rounded px-2 py-1 w-auto flex gap-1">
+                          <span className="font-semibold">₹</span>
+                          {formatNumberWithCommas(values?.makaanCompensation)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center text-gray-700 pt-5">
+                    <div className="flex flex-col gap-2">
+                      <div className="font-semibold">कुल मुआवजा - भूमि</div>
+                      <div className="flex gap-1 items-center relative">
+                        <span className="font-semibold">₹</span>
+                        <Field
+                          name="bhumiCompensation"
+                          type="number"
+                          className="custom-input border rounded px-2 py-1 w-24 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          placeholder="*मकान"
+                          value={values?.bhumiCompensation}
+                          onKeyDown={(e) => {
+                            if (
+                              e.key === "-" ||
+                              e.key === "e" ||
+                              e.key === "+"
+                            ) {
+                              e.preventDefault();
+                            }
+                          }}
+                          onWheel={(e) => e.target.blur()}
+                        />
+                        <ErrorMessage
+                          name="bhumiCompensation"
+                          component="div"
+                          className="text-red-500 text-xs"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <div className="font-semibold">
+                        कुल मुआवजा - फलदार भूमि
+                      </div>
+                      <div className="flex gap-1 items-center relative">
+                        <span className="font-semibold">₹</span>
+                        <Field
+                          name="faldaarBhumiCompensation"
+                          type="number"
+                          className="custom-input border rounded px-2 py-1 w-24 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          placeholder="*मकान"
+                          value={values?.faldaarBhumiCompensation}
+                          onKeyDown={(e) => {
+                            if (
+                              e.key === "-" ||
+                              e.key === "e" ||
+                              e.key === "+"
+                            ) {
+                              e.preventDefault();
+                            }
+                          }}
+                          onWheel={(e) => e.target.blur()}
+                        />
+                        <ErrorMessage
+                          name="faldaarBhumiCompensation"
+                          component="div"
+                          className="text-red-500 text-xs"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <div className="font-semibold">
+                        कुल मुआवजा - गैर फलदार भूमि
+                      </div>
+                      <div className="flex gap-1 items-center relative">
+                        <span className="font-semibold">₹</span>
+                        <Field
+                          name="gairFaldaarBhumiCompensation"
+                          type="number"
+                          className="custom-input border rounded px-2 py-1 w-24 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          placeholder="*मकान"
+                          value={values?.gairFaldaarBhumiCompensation}
+                          onKeyDown={(e) => {
+                            if (
+                              e.key === "-" ||
+                              e.key === "e" ||
+                              e.key === "+"
+                            ) {
+                              e.preventDefault();
+                            }
+                          }}
+                          onWheel={(e) => e.target.blur()}
+                        />
+                        <ErrorMessage
+                          name="gairFaldaarBhumiCompensation"
+                          component="div"
+                          className="text-red-500 text-xs"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-left overflow-x-auto custom-scrollbar">
+                  <table>
+                    <thead className="bg-gray-200 text-xs">
+                      <tr>
+                        <th className="px-2 py-3 text-center">
+                          {CONSTANTS.SERIAL_NUMBER}
+                        </th>
+                        <th className="px-2 py-3">
+                          {CONSTANTS.BENEFICIARY_NAME}
+                        </th>
+                        <th className="px-2 py-3">
+                          {CONSTANTS.BENEFICIARY_SHARE}
+                        </th>
+                        <th className="px-2 py-3">{CONSTANTS.BHUMI_PRICE}</th>
+                        <th className="px-2 py-3">
+                          {CONSTANTS.FALDAAR_BHUMI_PRICE}
+                        </th>
+                        <th className="px-2 py-3">
+                          {CONSTANTS.GAIR_FALDAAR_BHUMI_PRICE}
+                        </th>
+                        <th className="px-2 py-3">{CONSTANTS.HOUSE_PRICE}</th>
+                        <th className="px-2 py-3">{CONSTANTS.TOSHAN}</th>
+                        <th className="px-2 py-3">
+                          {CONSTANTS.INTEREST} ({interestDays} days)
+                        </th>
+                        <th className="px-2 py-3">
+                          {CONSTANTS.TOTAL_COMPENSATION}
+                        </th>
+                        <th className="px-2 py-3">{CONSTANTS.VIVRAN}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-xs">
+                      {beneficiaryList?.beneficiaries?.map(
+                        (beneficiary, index) => {
+                          return (
+                            <tr key={index}>
+                              {/* Serial Number */}
+                              <td className="px-2 py-3 text-center">
+                                {beneficiary.serialNumber}
+                              </td>
+                              {/* Beneficiary Name */}
+                              <td className="px-2 py-3 min-w-24">
+                                {beneficiary.beneficiaryName}
+                              </td>
+                              {/* Beneficiary Share */}
+                              <td className="px-2 py-3 min-w-24">
+                                {beneficiary.beneficiaryShare}
+                              </td>
+                              {/* Bhumi Price */}
+                              <td className="px-2 py-3">
+                                <div className="border rounded px-2 py-1 flex gap-1">
+                                  <span className="font-semibold">₹</span>
+                                  {formatNumberWithCommas(
+                                    values?.beneficiaries[index]?.bhumiPrice
+                                  )}
+                                </div>
+                              </td>
+                              {/* Faldaar bhumi */}
+                              <td className="px-2 py-3">
+                                <div className="border rounded px-2 py-1 flex gap-1">
+                                  <span className="font-semibold">₹</span>
+                                  {formatNumberWithCommas(
+                                    values?.beneficiaries[index]
+                                      ?.faldaarBhumiPrice
+                                  )}
+                                </div>
+                              </td>
+                              {/* Gair faldaar bhumi */}
+                              <td className="px-2 py-3">
+                                <div className="border rounded px-2 py-1 flex gap-1">
+                                  <span className="font-semibold">₹</span>
+                                  {formatNumberWithCommas(
+                                    values?.beneficiaries[index]
+                                      ?.gairFaldaarBhumiPrice
+                                  )}
+                                </div>
+                              </td>
+                              {/* House */}
+                              <td className="px-2 py-3">
+                                <div className="flex gap-1 items-center relative">
+                                  <span className="font-semibold">₹</span>
+                                  <Field
+                                    name={`beneficiaries[${index}].housePrice`}
+                                    type="number"
+                                    className="custom-input border rounded px-2 py-1 w-24 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    placeholder="*मकान"
+                                    value={
+                                      values?.beneficiaries[index]?.housePrice
+                                    }
+                                    onChange={(e) =>
+                                      handleFieldChange(
+                                        index,
+                                        "housePrice",
+                                        e.target.value || 0
+                                      )
+                                    }
+                                    onKeyDown={(e) => {
+                                      if (
+                                        e.key === "-" ||
+                                        e.key === "e" ||
+                                        e.key === "+"
+                                      ) {
+                                        e.preventDefault();
+                                      }
+                                    }}
+                                    onWheel={(e) => e.target.blur()}
+                                  />
+                                  <ErrorMessage
+                                    name={`beneficiaries[${index}].housePrice`}
+                                    component="div"
+                                    className="text-red-500 text-xs absolute top-8 left-3"
+                                  />
+                                </div>
+                              </td>
+                              {/* Automatically calculated Toshan */}
+                              <td className="px-2 py-3">
+                                <div className="border rounded px-2 py-1 w-auto flex gap-1">
+                                  <span className="font-semibold">₹</span>
+                                  {formatNumberWithCommas(
+                                    values?.beneficiaries[index]?.toshan
+                                  )}
+                                </div>
+                              </td>
+                              {/* Interest */}
+                              <td className="px-2 py-3">
+                                <div className="border rounded px-2 py-1 w-auto flex gap-1">
+                                  <span className="font-semibold">₹</span>
+                                  {formatNumberWithCommas(
+                                    values?.beneficiaries[index]?.interest
+                                  )}
+                                </div>
+                              </td>
+                              {/* Total Compensation */}
+                              <td className="px-2 py-3">
+                                <div className="flex gap-1 font-semibold items-center">
+                                  <span>₹</span>
+                                  {formatNumberWithCommas(
+                                    values?.beneficiaries[index]
+                                      ?.totalCompensation
+                                  )}
+                                </div>
+                              </td>
+                              {/* Vivran */}
+                              <td className="px-2 py-3">
+                                <div className="relative">
+                                  <Field
+                                    name={`beneficiaries[${index}].vivran`}
+                                    as="textarea"
+                                    rows="1"
+                                    className="custom-input border rounded px-2 py-2 w-28 hide-scrollbar min-h-[32px] max-h-[100px]"
+                                    placeholder="--"
+                                    value={
+                                      values?.beneficiaries[index]?.vivran || ""
+                                    }
+                                    onChange={(e) => {
+                                      if (e.target.value.length > 500) {
+                                        if (toastId) {
+                                          toast.dismiss(toastId);
+                                        }
+                                        const id = toast.error(
+                                          "Maximum character limit of 500 reached"
+                                        );
+                                        setToastId(id);
+                                      }
+                                      if (e.target.value.length <= 500) {
+                                        handleFieldChange(
+                                          index,
+                                          "vivran",
+                                          e.target.value
+                                        );
+                                      }
+                                    }}
+                                  />
+                                  <ErrorMessage
+                                    name={`beneficiaries[${index}].vivran`}
+                                    component="div"
+                                    className="text-red-500 text-xs absolute bottom-[-12.5px]"
+                                  />
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        }
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </Form>
             );
           }}

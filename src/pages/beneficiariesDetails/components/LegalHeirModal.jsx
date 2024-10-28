@@ -22,27 +22,27 @@ const LegalHeirModal = ({
         name: Yup.string()
           .min(3, "At least 3 characters")
           .required("Beneficiary name is required"),
-        bhumi: Yup.number()
+        bhumiShare: Yup.number()
           .min(0, "Minimum 0%")
           .max(100, "Maximum 100%")
           .test("is-decimal", "Up to 2 decimals allowed", (value) =>
             /^\d+(\.\d{1,2})?$/.test(value)
           )
           .required("*required"),
-        faldaarBhumi: Yup.number()
-          .min(0, "Minimum 0%")
-          .max(100, "Maximum 100%")
-          .test("is-decimal", "Up to 2 decimals allowed", (value) =>
-            /^\d+(\.\d{1,2})?$/.test(value)
-          )
-          .required("*required"),
-        gairFaldaarBhumi: Yup.number()
-          .min(0, "Minimum 0%")
-          .max(100, "Maximum 100%")
-          .test("is-decimal", "Up to 2 decimals allowed", (value) =>
-            /^\d+(\.\d{1,2})?$/.test(value)
-          )
-          .required("*required"),
+        // faldaarBhumi: Yup.number()
+        //   .min(0, "Minimum 0%")
+        //   .max(100, "Maximum 100%")
+        //   .test("is-decimal", "Up to 2 decimals allowed", (value) =>
+        //     /^\d+(\.\d{1,2})?$/.test(value)
+        //   )
+        //   .required("*required"),
+        // gairFaldaarBhumi: Yup.number()
+        //   .min(0, "Minimum 0%")
+        //   .max(100, "Maximum 100%")
+        //   .test("is-decimal", "Up to 2 decimals allowed", (value) =>
+        //     /^\d+(\.\d{1,2})?$/.test(value)
+        //   )
+        //   .required("*required"),
         makaanShare: Yup.number()
           .min(0, "Minimum 0%")
           .max(100, "Maximum 100%")
@@ -60,9 +60,9 @@ const LegalHeirModal = ({
     legalHeirs: [
       {
         name: "",
-        bhumi: 100,
-        faldaarBhumi: 100,
-        gairFaldaarBhumi: 100,
+        bhumiShare: 100,
+        // faldaarBhumi: 100,
+        // gairFaldaarBhumi: 100,
         makaanShare: 100,
       },
     ],
@@ -76,17 +76,17 @@ const LegalHeirModal = ({
   // Handle form submission
   const handleSubmit = (values, { setSubmitting }) => {
     const totalBhumi = values.legalHeirs.reduce(
-      (acc, beneficiary) => acc + Number(beneficiary.bhumi),
+      (acc, beneficiary) => acc + Number(beneficiary.bhumiShare),
       0
     );
-    const totalFaldaarBhumi = values.legalHeirs.reduce(
-      (acc, beneficiary) => acc + Number(beneficiary.faldaarBhumi),
-      0
-    );
-    const totalGairFaldaarBhumi = values.legalHeirs.reduce(
-      (acc, beneficiary) => acc + Number(beneficiary.gairFaldaarBhumi),
-      0
-    );
+    // const totalFaldaarBhumi = values.legalHeirs.reduce(
+    //   (acc, beneficiary) => acc + Number(beneficiary.faldaarBhumi),
+    //   0
+    // );
+    // const totalGairFaldaarBhumi = values.legalHeirs.reduce(
+    //   (acc, beneficiary) => acc + Number(beneficiary.gairFaldaarBhumi),
+    //   0
+    // );
     const totalMakaanShare = values.legalHeirs.reduce(
       (acc, beneficiary) => acc + Number(beneficiary.makaanShare),
       0
@@ -96,31 +96,31 @@ const LegalHeirModal = ({
       toast.error(
         "The total percentage of bhumi divided among the legal heirs must equal 100%."
       );
-    } else if (totalFaldaarBhumi !== 100) {
-      toast.error(
-        "The total percentage of faldaar-bhumi divided among the legal heirs must equal 100%."
-      );
-    } else if (totalGairFaldaarBhumi !== 100) {
-      toast.error(
-        "The total percentage of gairfaldaar-bhumi divided among the legal heirs must equal 100%."
-      );
+      // } else if (totalFaldaarBhumi !== 100) {
+      //   toast.error(
+      //     "The total percentage of faldaar-bhumi divided among the legal heirs must equal 100%."
+      //   );
+      // } else if (totalGairFaldaarBhumi !== 100) {
+      //   toast.error(
+      //     "The total percentage of gairfaldaar-bhumi divided among the legal heirs must equal 100%."
+      //   );
     } else if (totalMakaanShare !== 100) {
       toast.error(
         "The total percentage of makaan divided among the legal heirs must equal 100%."
       );
     } else {
-      console.log(values.legalHeirs, "values.legalHeirs");
       const allValid = values.legalHeirs.every((beneficiary) =>
-        ["bhumi", "faldaarBhumi", "gairFaldaarBhumi", "makaanShare"].some(
-          (field) => beneficiary[field] >= 1
-        )
+        [
+          "bhumiShare",
+          // "faldaarBhumi", "gairFaldaarBhumi",
+          "makaanShare",
+        ].some((field) => beneficiary[field] >= 1)
       );
       if (!allValid) {
         toast.error(
-          "Every legal heir must have at least 1% share in any of the field (bhumi, faldaar-bhumi, gairfaldaar-bhumi, makaan)."
+          "Every legal heir must have at least 1% share in bhumi or in makaan."
         );
       } else {
-        console.log(values, "---");
         dispatch(addLegalHeir(values)).then((res) => {
           if (res.success) {
             toast.success(res.message);
@@ -232,19 +232,19 @@ const LegalHeirModal = ({
                             <div className="grid grid-cols-2 gap-4 mt-4">
                               <div>
                                 <label
-                                  htmlFor={`legalHeirs.${index}.bhumi`}
+                                  htmlFor={`legalHeirs.${index}.bhumiShare`}
                                   className="block text-xs font-medium text-gray-700"
                                 >
                                   Bhumi Share %age
                                 </label>
                                 <Field
-                                  name={`legalHeirs.${index}.bhumi`}
+                                  name={`legalHeirs.${index}.bhumiShare`}
                                   type="number"
                                   className="custom-input px-3 py-2 text-sm appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                   placeholder="Enter percentage"
                                   onChange={(e) => {
                                     setFieldValue(
-                                      `legalHeirs.${index}.bhumi`,
+                                      `legalHeirs.${index}.bhumiShare`,
                                       e.target.value &&
                                         parseFloat(
                                           Number(e.target.value).toFixed(2)
@@ -263,13 +263,13 @@ const LegalHeirModal = ({
                                   onWheel={(e) => e.target.blur()}
                                 />
                                 <ErrorMessage
-                                  name={`legalHeirs.${index}.bhumi`}
+                                  name={`legalHeirs.${index}.bhumiShare`}
                                   component="div"
                                   className="text-red-500 text-xs"
                                 />
                               </div>
 
-                              <div>
+                              {/* <div>
                                 <label
                                   htmlFor={`legalHeirs.${index}.faldaarBhumi`}
                                   className="block text-xs font-medium text-gray-700"
@@ -306,9 +306,9 @@ const LegalHeirModal = ({
                                   component="div"
                                   className="text-red-500 text-xs"
                                 />
-                              </div>
+                              </div> */}
 
-                              <div>
+                              {/* <div>
                                 <label
                                   htmlFor={`legalHeirs.${index}.gairFaldaarBhumi`}
                                   className="block text-xs font-medium text-gray-700"
@@ -345,7 +345,7 @@ const LegalHeirModal = ({
                                   component="div"
                                   className="text-red-500 text-xs"
                                 />
-                              </div>
+                              </div> */}
 
                               <div>
                                 <label
@@ -397,21 +397,21 @@ const LegalHeirModal = ({
                         onClick={() => {
                           const totalBhumi = values.legalHeirs.reduce(
                             (acc, beneficiary) =>
-                              acc + (parseFloat(beneficiary.bhumi) || 0),
+                              acc + (parseFloat(beneficiary.bhumiShare) || 0),
                             0
                           );
-                          const totalFaldaarBhumi = values.legalHeirs.reduce(
-                            (acc, beneficiary) =>
-                              acc + (parseFloat(beneficiary.faldaarBhumi) || 0),
-                            0
-                          );
-                          const totalGairfaldaarBhumi =
-                            values.legalHeirs.reduce(
-                              (acc, beneficiary) =>
-                                acc +
-                                (parseFloat(beneficiary.gairFaldaarBhumi) || 0),
-                              0
-                            );
+                          // const totalFaldaarBhumi = values.legalHeirs.reduce(
+                          //   (acc, beneficiary) =>
+                          //     acc + (parseFloat(beneficiary.faldaarBhumi) || 0),
+                          //   0
+                          // );
+                          // const totalGairfaldaarBhumi =
+                          //   values.legalHeirs.reduce(
+                          //     (acc, beneficiary) =>
+                          //       acc +
+                          //       (parseFloat(beneficiary.gairFaldaarBhumi) || 0),
+                          //     0
+                          //   );
                           const totalMakaanShare = values.legalHeirs.reduce(
                             (acc, beneficiary) =>
                               acc + (parseFloat(beneficiary.makaanShare) || 0),
@@ -419,13 +419,15 @@ const LegalHeirModal = ({
                           );
                           push({
                             name: "",
-                            bhumi: parseFloat((100 - totalBhumi).toFixed(2)),
-                            faldaarBhumi: parseFloat(
-                              (100 - totalFaldaarBhumi).toFixed(2)
+                            bhumiShare: parseFloat(
+                              (100 - totalBhumi).toFixed(2)
                             ),
-                            gairFaldaarBhumi: parseFloat(
-                              (100 - totalGairfaldaarBhumi).toFixed(2)
-                            ),
+                            // faldaarBhumi: parseFloat(
+                            //   (100 - totalFaldaarBhumi).toFixed(2)
+                            // ),
+                            // gairFaldaarBhumi: parseFloat(
+                            //   (100 - totalGairfaldaarBhumi).toFixed(2)
+                            // ),
                             makaanShare: parseFloat(
                               (100 - totalMakaanShare).toFixed(2)
                             ),

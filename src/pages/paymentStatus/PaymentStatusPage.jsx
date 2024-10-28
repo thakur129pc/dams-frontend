@@ -44,7 +44,6 @@ const PaymentStatusPage = () => {
         return item.pancard.includes(searchTerm);
       }
       if (searchBy === "name") {
-        console.log("first");
         return (
           typeof item?.beneficiaryName === "string" &&
           item.beneficiaryName
@@ -331,7 +330,7 @@ const PaymentStatusPage = () => {
       <div className="overflow-auto border rounded-lg shadow-lg">
         {/* Table Header */}
         <table className="min-w-full text-left table-auto">
-          <thead className="bg-gray-200 text-sm">
+          <thead className="bg-gray-200 text-xs">
             <tr>
               <th className="px-3 py-2">{CONSTANTS.SERIAL_NUMBER}</th>
               <th className="px-3 py-2">{CONSTANTS.BENEFICIARY_NAME}</th>

@@ -76,7 +76,7 @@ const RouterComponent = () => {
                 element: <BeneficiariesDetailsPage />,
               },
               {
-                path: "add-disbursement/:villageName/:khatauni",
+                path: "add-disbursement/:villageName/:khatauni/:villageId?",
                 element:
                   userRole === "0" ? (
                     <AddDisbursementPage />

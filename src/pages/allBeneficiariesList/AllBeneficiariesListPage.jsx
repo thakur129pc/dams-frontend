@@ -83,7 +83,7 @@ const AllBeneficiariesListPage = () => {
     } else if (role == "3") {
       return "DC Admistration";
     } else {
-      return "Inputer";
+      return "Inputter";
     }
   };
 
@@ -415,7 +415,7 @@ const AllBeneficiariesListPage = () => {
       <div className="overflow-x-scroll custom-scrollbar border rounded-lg shadow-lg">
         {/* Table Header */}
         <table className="min-w-full text-left table-auto">
-          <thead className="bg-gray-200 text-sm">
+          <thead className="bg-gray-200 text-xs">
             <tr>
               <th className="px-3 py-2 text-center min-w-[100px]">
                 {CONSTANTS.TYPE}

@@ -52,7 +52,7 @@ const BeneficiariesDetailsPage = () => {
     } else if (role == "3") {
       return "DC Admistration";
     } else {
-      return "Inputer";
+      return "Inputter";
     }
   };
 
@@ -80,6 +80,9 @@ const BeneficiariesDetailsPage = () => {
     if (status === "2") {
       setModalType("revok");
     }
+    if (status === "3") {
+      setModalType("revert");
+    }
   };
 
   // Refresh query modal data
@@ -95,13 +98,15 @@ const BeneficiariesDetailsPage = () => {
     beneficiaryId,
     status,
     rejectionMessage,
-    revokedMessage
+    revokedMessage,
+    revertMessage
   ) => {
     const payload = {
       beneficiaryId,
       status,
       rejectionMessage,
       revokedMessage,
+      revertMessage,
     };
     dispatch(verifyDetails(payload)).then((res) => {
       if (res.success) {
@@ -231,7 +236,7 @@ const BeneficiariesDetailsPage = () => {
                         )}
                       </div>
 
-                      {userRole === "0" && (
+                      {/* {userRole === "0" && (
                         <button
                           onClick={() => {
                             handleModal(
@@ -245,7 +250,7 @@ const BeneficiariesDetailsPage = () => {
                             ? CONSTANTS.BUTTON.EDIT_DISBURSEMENT_DETAILS
                             : CONSTANTS.BUTTON.ADD_DISBURSEMENT_DETAILS}
                         </button>
-                      )}
+                      )} */}
                       {(userRole === "1" ||
                         userRole === "2" ||
                         userRole === "3" ||
@@ -502,6 +507,19 @@ const BeneficiariesDetailsPage = () => {
                               >
                                 {CONSTANTS.BUTTON.REJECT}
                               </button>
+                              {(userRole === "2" || userRole === "3") && (
+                                <button
+                                  className="text-white py-2 px-4 rounded-lg w-[200px] bg-gray-500 hover:bg-gray-600"
+                                  onClick={() =>
+                                    handleVerifyModal(
+                                      beneficiary.beneficiaryId,
+                                      "3"
+                                    )
+                                  }
+                                >
+                                  {CONSTANTS.BUTTON.REVERT_BACK}
+                                </button>
+                              )}
                             </>
                           )}
                         </div>

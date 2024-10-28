@@ -15,13 +15,13 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [toastId, setToastId] = useState(null);
 
-  const { loader } = useSelector((state) => state.loadingSlice);
+  // const { loader } = useSelector((state) => state.loadingSlice);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const userRoles = [
-    { value: "0", label: "Department Inputer" },
+    { value: "0", label: "Department Inputter" },
     { value: "1", label: "Department Verifier" },
     { value: "2", label: "Finance Approver" },
     { value: "3", label: "DC Administration" },
@@ -173,7 +173,7 @@ const LoginPage = () => {
           )}
         </Formik>
       </div>
-      {loader && <Loader />}
+      {/* {loader && <Loader />} */}
       <Toaster />
     </div>
   );

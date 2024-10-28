@@ -25,7 +25,7 @@ const HeaderDropdown = ({ setModalOpen }) => {
     } else if (role === "3") {
       return "DC Administration";
     } else {
-      return "Inputer";
+      return "Inputter";
     }
   };
 
