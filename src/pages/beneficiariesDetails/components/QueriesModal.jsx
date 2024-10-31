@@ -201,11 +201,11 @@ const QueriesModal = ({
             ) : msg.message.includes("---@revoked@---") ? (
               <div key={index} className="flex flex-col mb-4">
                 <div className="my-2 text-xs font-semibold text-gray-500 flex justify-center items-center">
-                  <div className="border border-orange-400 flex-1"></div>
-                  <div className="p-2 text-orange-400">Revoked</div>
-                  <div className="border border-orange-400 flex-1"></div>
+                  <div className="border border-amber-300 flex-1"></div>
+                  <div className="p-2 text-amber-400">Rejection Revoked</div>
+                  <div className="border border-amber-300 flex-1"></div>
                 </div>
-                <div className="w-2/3 self-center p-4 bg-orange-300 rounded-lg shadow text-left">
+                <div className="w-2/3 self-center p-4 bg-amber-300 rounded-lg shadow text-left">
                   <p className="text-gray-700">
                     <span className="font-medium text-gray-600">Reason: </span>
                     {msg.message.split("---@revoked@---")[1]}
@@ -217,14 +217,14 @@ const QueriesModal = ({
                   </small>
                 </div>
                 <div className="my-5 text-xs font-semibold text-gray-500 flex justify-center items-center">
-                  <div className="border border-orange-400 flex-1"></div>
+                  <div className="border border-violet-300 flex-1"></div>
                 </div>
               </div>
             ) : msg.message.includes("---@revert@---") ? (
               <div key={index} className="flex flex-col mb-4">
                 <div className="my-2 text-xs font-semibold text-gray-500 flex justify-center items-center">
                   <div className="border border-orange-400 flex-1"></div>
-                  <div className="p-2 text-orange-400">Reverted</div>
+                  <div className="p-2 text-orange-400">Reverted to Inputter</div>
                   <div className="border border-orange-400 flex-1"></div>
                 </div>
                 <div className="w-2/3 self-center p-4 bg-orange-300 rounded-lg shadow text-left">

@@ -102,7 +102,7 @@ export default function ApproveRejectModal({
         )}
         <div className="flex gap-5 justify-between w-full">
           <button
-            className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 w-full"
+            className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 w-full"
             onClick={() => closeModal()}
           >
             Back

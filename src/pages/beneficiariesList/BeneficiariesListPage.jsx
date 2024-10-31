@@ -252,19 +252,23 @@ const BeneficiariesListPage = () => {
                     >
                       <div className="flex justify-between items-center">
                         <div className="flex gap-2">
-                          {/* <input
-                            value={khatauniSankhya}
-                            id={khatauniSankhya}
-                            checked={selectedKhatauni.includes(khatauniSankhya)}
-                            type="checkbox"
-                            className="form-checkbox"
-                            onChange={(event) => {
-                              handleKhatauniCheck(event.target);
-                            }}
-                          /> */}
+                          {userRole !== "0" && (
+                            <input
+                              value={khatauniSankhya}
+                              id={khatauniSankhya}
+                              checked={selectedKhatauni.includes(
+                                khatauniSankhya
+                              )}
+                              type="checkbox"
+                              className="form-checkbox"
+                              onChange={(event) => {
+                                handleKhatauniCheck(event.target);
+                              }}
+                            />
+                          )}
                           <label
-                          // htmlFor={khatauniSankhya}
-                          // className="cursor-pointer"
+                            htmlFor={khatauniSankhya}
+                            className="cursor-pointer"
                           >
                             {CONSTANTS.KHATAUNI_SANKHYA}: {khatauniSankhya}
                           </label>

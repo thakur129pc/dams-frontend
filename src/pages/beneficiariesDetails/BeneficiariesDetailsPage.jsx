@@ -236,21 +236,21 @@ const BeneficiariesDetailsPage = () => {
                         )}
                       </div>
 
-                      {/* {userRole === "0" && (
-                        <button
-                          onClick={() => {
-                            handleModal(
-                              beneficiary,
-                              beneficiary.isDisbursementUploaded
-                            );
-                          }}
-                          className="bg-blue-500 text-white py-1 px-4 rounded-lg hover:bg-blue-600"
-                        >
-                          {beneficiary?.isDisbursementUploaded == "1"
-                            ? CONSTANTS.BUTTON.EDIT_DISBURSEMENT_DETAILS
-                            : CONSTANTS.BUTTON.ADD_DISBURSEMENT_DETAILS}
-                        </button>
-                      )} */}
+                      {userRole === "0" &&
+                        (beneficiary?.isDisbursementUploaded == "1" ||
+                          beneficiary?.verificationDetails?.status === "0") && (
+                          <button
+                            onClick={() => {
+                              handleModal(
+                                beneficiary,
+                                beneficiary.isDisbursementUploaded
+                              );
+                            }}
+                            className="bg-blue-500 text-white py-1 px-4 rounded-lg hover:bg-blue-600"
+                          >
+                            {CONSTANTS.BUTTON.EDIT_DISBURSEMENT_DETAILS}
+                          </button>
+                        )}
                       {(userRole === "1" ||
                         userRole === "2" ||
                         userRole === "3" ||
@@ -455,7 +455,14 @@ const BeneficiariesDetailsPage = () => {
                           {beneficiary.verificationDetails.level !== userRole &&
                           beneficiary.verificationDetails.status === "0" ? (
                             <button
-                              className="text-white py-2 px-4 rounded-lg w-[200px] bg-amber-400 hover:bg-amber-500"
+                              className={`text-white py-2 px-4 rounded-lg w-[200px] ${
+                                beneficiary.isDisbursementUploaded === "0"
+                                  ? "bg-amber-200 cursor-not-allowed"
+                                  : " bg-amber-400 hover:bg-amber-500"
+                              }`}
+                              disabled={
+                                beneficiary.isDisbursementUploaded === "0"
+                              }
                               onClick={() =>
                                 handleVerifyModal(
                                   beneficiary.beneficiaryId,
@@ -535,7 +542,6 @@ const BeneficiariesDetailsPage = () => {
         <AddSingleDisbursement
           setIsOpen={setIsModalOpen}
           details={modalBeneficiary}
-          disbursementStatus={disbursementStatus}
           setRecallAPI={setRecallAPI}
           recallAPI={recallAPI}
         />

@@ -360,17 +360,25 @@ const AllBeneficiariesListPage = () => {
             )}
             {userRole !== "0" && (
               <option key="1" value="1">
-                Verified (By {setRole(userRole)})
+                {userRole === "1"
+                  ? "Verified"
+                  : `Verified By (${setRole(userRole)})`}
               </option>
             )}
             {userRole !== "0" && (
               <option key="0" value="0">
-                Rejected (By {setRole(userRole)})
+                {userRole === "1"
+                  ? "Rejected"
+                  : `Rejected By (${setRole(userRole)})`}
               </option>
             )}
             {userRole !== "3" && (
               <option key="2" value="2">
-                Rejected (By {setRole((parseFloat(userRole) + 1).toString())})
+                {userRole === "0"
+                  ? "Rejected"
+                  : `Rejected By (${setRole(
+                      (parseFloat(userRole) + 1).toString()
+                    )})`}
               </option>
             )}
           </select>

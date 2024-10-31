@@ -36,21 +36,20 @@ const validationSchema = Yup.object({
 const AddSingleDisbursement = ({
   setIsOpen,
   details,
-  disbursementStatus,
   setRecallAPI,
   recallAPI,
 }) => {
   const {
     beneficiaryId,
-    khatauniSankhya,
     serialNumber,
     beneficiaryName,
-    khasraNumber,
     landPricePerSqMt,
-    acquiredBeneficiaryShare,
-    disbursementDetails,
     interestDays,
+    beneficiaryShare,
+    disbursementDetails,
   } = details;
+
+  console.log(details,"---details---")
 
   const {
     bhumiPrice,
@@ -69,7 +68,6 @@ const AddSingleDisbursement = ({
     beneficiaryId: beneficiaryId,
     landPricePerSqMt: landPricePerSqMt,
     interestDays: interestDays || 0,
-    acquiredBeneficiaryShare: acquiredBeneficiaryShare,
     bhumiPrice: bhumiPrice || 0,
     faldaarBhumiPrice: faldaarBhumiPrice || 0,
     gairFaldaarBhumiPrice: gairFaldaarBhumiPrice || 0,
@@ -103,7 +101,7 @@ const AddSingleDisbursement = ({
 
   return (
     <div className="inset-0 text-sm bg-gray-800 bg-opacity-50 flex justify-center items-center z-50 fixed">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl relative m-5">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-xl relative m-5">
         <button
           className="text-gray-500 hover:text-gray-800 absolute top-3 right-3 text-lg"
           onClick={() => setIsOpen(false)}
@@ -111,36 +109,21 @@ const AddSingleDisbursement = ({
           <RxCross1 />
         </button>
         <h2 className="text-xl font-semibold mb-6 text-center text-gray-700">
-          {disbursementStatus == "1"
-            ? CONSTANTS.BUTTON.EDIT_DISBURSEMENT_DETAILS
-            : CONSTANTS.BUTTON.ADD_DISBURSEMENT_DETAILS}
+          {CONSTANTS.BUTTON.EDIT_DISBURSEMENT_DETAILS}
         </h2>
 
-        <div className="grid grid-cols-2 gap-2 mb-2 text-gray-700">
+        <div className="grid grid-cols-2 gap-2 mb-3 text-gray-700">
           <div>
-            <p className="font-semibold">{CONSTANTS.KHATAUNI_SANKHYA}</p>
-            <p className="text-gray-600">{khatauniSankhya}</p>
+            <p className="font-semibold">{CONSTANTS.BENEFICIARY_NAME}</p>
+            <p className="text-gray-600">{beneficiaryName}</p>
           </div>
           <div>
             <p className="font-semibold">{CONSTANTS.SERIAL_NUMBER}</p>
             <p className="text-gray-600">{serialNumber}</p>
           </div>
           <div>
-            <p className="font-semibold">{CONSTANTS.BENEFICIARY_NAME}</p>
-            <p className="text-gray-600">{beneficiaryName}</p>
-          </div>
-          <div>
-            <p className="font-semibold">{CONSTANTS.KHASRA_NUMBER}</p>
-            <p className="text-gray-600">{khasraNumber}</p>
-          </div>
-          <div>
-            <p className="font-semibold">
-              {CONSTANTS.ACQUIRED_BENEFICIARY_SHARE} (SqMt)
-            </p>
-            <p className="text-gray-600">
-              {" "}
-              {parseFloat(acquiredBeneficiaryShare.split("-").join(""))}
-            </p>
+            <p className="font-semibold">{CONSTANTS.BENEFICIARY_SHARE}</p>
+            <p className="text-gray-600">{beneficiaryShare}</p>
           </div>
           <div>
             <p className="font-semibold">{CONSTANTS.LAND_PRICE_PER_SQ_MT}</p>
@@ -163,15 +146,6 @@ const AddSingleDisbursement = ({
               const gairFaldaarBhumiPrice =
                 parseFloat(values?.gairFaldaarBhumiPrice) || 0;
               const housePrice = parseFloat(values?.housePrice) || 0;
-
-              // Calculate bhumi price
-              const bhumi =
-                values?.landPricePerSqMt *
-                parseFloat(
-                  values?.acquiredBeneficiaryShare.split("-").join("") || 0
-                );
-              // Set calculated bhumi price
-              setFieldValue("bhumiPrice", parseFloat(bhumi.toFixed(2)));
 
               // Calculate toshan
               const toshan =
@@ -199,8 +173,8 @@ const AddSingleDisbursement = ({
 
             return (
               <Form className="space-y-1">
-                <div className="grid grid-cols-2 gap-y-1 gap-x-5">
-                  {/* Bhumi Price */}
+                <div className="grid grid-cols-2 gap-y-2 gap-x-5">
+                  {/* Bhumi */}
                   <div>
                     <label
                       htmlFor="bhumiPrice"
@@ -208,10 +182,27 @@ const AddSingleDisbursement = ({
                     >
                       {CONSTANTS.BHUMI_PRICE}
                     </label>
-                    <div className="custom-input block w-full p-2 border border-gray-300 rounded-md shadow-sm">
-                      <span className="font-semibold">₹ </span>
-                      {formatNumberWithCommas(values.bhumiPrice)}
+                    <div className="flex gap-1 items-center">
+                      <span className="font-semibold text-lg">₹ </span>
+                      <Field
+                        id="bhumiPrice"
+                        name="bhumiPrice"
+                        type="number"
+                        className="custom-input block w-full p-2 border rounded-md shadow-sm appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        placeholder="Enter amount"
+                        onKeyDown={(e) => {
+                          if (e.key === "-" || e.key === "e" || e.key === "+") {
+                            e.preventDefault();
+                          }
+                        }}
+                        onWheel={(e) => e.target.blur()}
+                      />
                     </div>
+                    <ErrorMessage
+                      name="bhumiPrice"
+                      component="div"
+                      className="text-red-500 text-xs"
+                    />
                   </div>
                   {/* Faldaar bhumi */}
                   <div>
@@ -234,6 +225,7 @@ const AddSingleDisbursement = ({
                             e.preventDefault();
                           }
                         }}
+                        onWheel={(e) => e.target.blur()}
                       />
                     </div>
                     <ErrorMessage
@@ -263,6 +255,7 @@ const AddSingleDisbursement = ({
                             e.preventDefault();
                           }
                         }}
+                        onWheel={(e) => e.target.blur()}
                       />
                     </div>
                     <ErrorMessage
@@ -292,6 +285,7 @@ const AddSingleDisbursement = ({
                             e.preventDefault();
                           }
                         }}
+                        onWheel={(e) => e.target.blur()}
                       />
                     </div>
                     <ErrorMessage
